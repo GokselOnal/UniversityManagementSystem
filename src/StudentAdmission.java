@@ -2,10 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class StudentAdmission extends JFrame implements ActionListener {
     JLabel title;
     JLabel name;
+    JLabel password;
     JLabel age;
     JLabel email;
     JLabel address;
@@ -16,6 +20,7 @@ public class StudentAdmission extends JFrame implements ActionListener {
     JLabel studentAddimage;
 
     JTextField text_name;
+    JPasswordField text_password;
     JTextField text_age;
     JTextField text_email;
     JTextField text_address;
@@ -86,12 +91,13 @@ public class StudentAdmission extends JFrame implements ActionListener {
         birth.setBounds(450,150,150,30);
         birth.setFont(new Font("serif",Font.BOLD,15));
 
-        text_birth = new JTextField("dd/mm/yyyy");
+        text_birth = new JTextField("yyyy-mm-dd");
         text_birth.setBounds(550,150,150,30);
 
         level = new JLabel("Level");
         level.setBounds(450,250,150,30);
         level.setFont(new Font("serif",Font.BOLD,15));
+
 
         String levels[] = {"Undergraduate","Master","PhD"};
         combo_level = new JComboBox(levels);
@@ -102,26 +108,50 @@ public class StudentAdmission extends JFrame implements ActionListener {
         program.setBounds(450,350,150,30);
         program.setFont(new Font("serif",Font.BOLD,15));
 
+        ArrayList<String> programs = new ArrayList<String>();
+        try {
+            conn connection = new conn();
+            String selectQuery = "select department_name from department";
+            ResultSet rs = connection.statement.executeQuery(selectQuery);
 
-        String programs[] = {"Computer Science","...","..."};
-        combo_program = new JComboBox(programs);
+            while(rs.next()){
+                String department_name = rs.getString("department_name");
+                programs.add(department_name);
+            }
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
+        String[] programsArr = new String[programs.size()];
+        for(int i = 0 ; i < programs.size(); i++){
+            programsArr[i] = programs.get(i);
+        }
+
+        combo_program = new JComboBox(programsArr);
         combo_program.setBounds(550,350,150,30);
         combo_program.setBackground(Color.white);
 
+
+        password = new JLabel("Password");
+        password.setBounds(450,450,150,30);
+        password.setFont(new Font("serif",Font.BOLD,15));
+
+        text_password = new JPasswordField();
+        text_password.setBounds(550,450,150,30);
+
+
         submit = new JButton("Submit");
-        submit.setBounds(450,500,150,40);
+        submit.setBounds(450,530,150,40);
         submit.setBackground(new Color(255,140,0));
         submit.setFocusable(false);
         submit.setForeground(Color.BLACK);
         submit.addActionListener(this);
 
         cancel = new JButton("Cancel");
-        cancel.setBounds(620,500,150,40);
+        cancel.setBounds(620,530,150,40);
         cancel.setBackground(new Color(255,140,0));
         cancel.setFocusable(false);
         cancel.setForeground(Color.BLACK);
         cancel.addActionListener(this);
-
 
         studentAddimage.add(title);
         studentAddimage.add(name);
@@ -140,20 +170,84 @@ public class StudentAdmission extends JFrame implements ActionListener {
         studentAddimage.add(combo_level);
         studentAddimage.add(program);
         studentAddimage.add(combo_program);
+        studentAddimage.add(password);
+        studentAddimage.add(text_password);
         studentAddimage.add(submit);
         studentAddimage.add(cancel);
+        this.setResizable(false);
         this.add(studentAddimage);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
+        String name,password,age,e_mail,address,phone,dob,level,program;
+
         if(e.getSource() == submit){
+            name = text_name.getText();
+            password = text_password.getText();
+            age = text_age.getText();
+            e_mail = text_age.getText();
+            address = text_address.getText();
+            phone = text_phone.getText();
+            dob = text_birth.getText();
+            level = (String)combo_level.getSelectedItem();
+            program = (String)combo_program.getSelectedItem();
+
+
+            try{
+                conn connection = new conn();
+
+                String selectQuery = "select lid from level where level_name = '"+level+"'";
+                ResultSet rs = connection.statement.executeQuery(selectQuery);
+
+                rs.next();
+                String level_id = rs.getString("lid");
+                int level_idInt = Integer.parseInt(level_id);
+
+                String selectQueryDep = "select did from department where department_name = '"+program+"'";
+                ResultSet rs2 = connection.statement.executeQuery(selectQueryDep);
+
+                rs2.next();
+                String department_id = rs2.getString("did");
+                int department_idInt = Integer.parseInt(department_id);
+
+                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,level_id,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+level_idInt+","+department_idInt+",'1')";
+                connection.statement.executeUpdate(query);
+
+                JOptionPane.showMessageDialog(null, "Student have been added successfully");
+                makeTextFieldEmpty();
+            }
+            catch (Exception ee){
+                ee.printStackTrace();
+                if((String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:")) || String.valueOf(ee).startsWith("java.sql.SQLException: Data truncated")){
+                    JOptionPane.showMessageDialog(null, "Please enter only integer values on age field");
+                    makeTextFieldEmpty();
+                }
+                else if(String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long")){
+                    JOptionPane.showMessageDialog(null, "Please enter 11 numbers on phone field");
+                    makeTextFieldEmpty();
+                }
+                else if(String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Incorrect date value:")){
+                    JOptionPane.showMessageDialog(null, "Please enter date correctly on DOB field");
+                    makeTextFieldEmpty();
+                }
+            }
 
         }
         else if(e.getSource() == cancel){
             this.setVisible(false);
         }
+    }
+    public void makeTextFieldEmpty(){
+        text_name.setText("");
+        text_password.setText("");
+        text_age.setText("");
+        text_email.setText("");
+        text_address.setText("");
+        text_phone.setText("");
+        text_birth.setText("");
     }
 
     public static void main(String[] args) {
