@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Login extends JFrame implements ActionListener {
 
@@ -15,8 +14,8 @@ public class Login extends JFrame implements ActionListener {
     Login(){
         this.setTitle("Login");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(600,300);
         this.setBackground(Color.white);
+        this.setSize(600,300);
         this.setLayout(null);
 
         label1 = new JLabel("Username");
@@ -72,18 +71,28 @@ public class Login extends JFrame implements ActionListener {
                 conn conn1 = new conn();
                 String name = textField1.getText();
                 String password = textField2.getText();
-                System.out.println(password);
 
-                String query = "select * from login where name= '" + name + "' and password= '" + password + "'";
+                String query = "select * from user where name= '" + name + "' and password= '" + password + "'";
                 ResultSet rs = conn1.statement.executeQuery(query);
-                if (rs.next()) {
+
+                if(name.equals("admin") && password.equals("aa")){
                     this.setVisible(false);
-                    //yeni sayfa ac
-                    System.out.println("student ekranı ac");
-                    new StudentPage();
+                    new ManagerPage().setVisible(true);
+                }
+                else if (rs.next()) {
+                    String user_type = rs.getString("type");
+                    if(user_type.equals("1")) {
+                        this.setVisible(false);
+                        new StudentPage().setVisible(true);
+                    }
+                    else if(user_type.equals("2")){
+                        this.setVisible(false);
+                        new TeacherPage().setVisible(true);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid login");
-                    setVisible(false);
+                    textField2.setText("");
+                    textField1.setText("");
                 }
 
             } catch (Exception exception) {
@@ -91,10 +100,9 @@ public class Login extends JFrame implements ActionListener {
             }
         }
         else{
-            System.out.println("cancel a bastı");
+            System.exit(0);
         }
     }
-
 
     public static void main(String[] args) {
         new Login();
