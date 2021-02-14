@@ -21,7 +21,7 @@ public class ManagerPage extends JFrame implements ActionListener {
         menuBar = new JMenuBar();
 
         JMenu master = new JMenu("Master");
-        JMenuItem m1 = new JMenuItem("New Faculty");
+        JMenuItem m1 = new JMenuItem("New Program");
         JMenuItem m2 = new JMenuItem("New Student Admission");
         JMenuItem m3 = new JMenuItem("New Teacher Admission");
         master.setForeground(new Color(255,140,0));
@@ -35,7 +35,7 @@ public class ManagerPage extends JFrame implements ActionListener {
 
 
         JMenu details = new JMenu("Details");
-        JMenuItem d1 = new JMenuItem("Faculty Details");
+        JMenuItem d1 = new JMenuItem("Program Details");
         JMenuItem d2 = new JMenuItem("Student Details");
         JMenuItem d3 = new JMenuItem("Teacher Details");
         details.setForeground(new Color(116,96,96));
@@ -49,7 +49,7 @@ public class ManagerPage extends JFrame implements ActionListener {
 
 
         JMenu updateDetails = new JMenu("Update Details");
-        JMenuItem ud1 = new JMenuItem("Update Faculty");
+        JMenuItem ud1 = new JMenuItem("Update Program");
         JMenuItem ud2 = new JMenuItem("Update Student");
         JMenuItem ud3 = new JMenuItem("Update Teacher");
         updateDetails.setForeground(new Color(255,140,0));
@@ -89,7 +89,7 @@ public class ManagerPage extends JFrame implements ActionListener {
         else if(msg.equals("New Teacher Admission")){
             new TeacherAdmission().setVisible(true);
         }
-        else if(msg.equals("New Faculty")){
+        else if(msg.equals("New Program")){
 
         }
         else if(msg.equals("Student Details")){
