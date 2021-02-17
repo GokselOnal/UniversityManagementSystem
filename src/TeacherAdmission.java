@@ -88,7 +88,7 @@ public class TeacherAdmission extends JFrame implements ActionListener {
         birth.setBounds(450,250,150,30);
         birth.setFont(new Font("serif",Font.BOLD,15));
 
-        text_birth = new JTextField("yyyy/mm/dd");
+        text_birth = new JTextField("yyyy-mm-dd");
         text_birth.setBounds(550,250,150,30);
 
 
@@ -163,7 +163,7 @@ public class TeacherAdmission extends JFrame implements ActionListener {
         teacherAddimage.add(cancel);
         this.add(teacherAddimage);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        this.setResizable(false);
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -191,14 +191,13 @@ public class TeacherAdmission extends JFrame implements ActionListener {
                 String department_id = rs.getString("did");
                 int department_idInt = Integer.parseInt(department_id);
 
-                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+department_idInt+",'1')";
+                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+department_idInt+",'2')";
                 connection.statement.executeUpdate(query);
 
-                JOptionPane.showMessageDialog(null, "Teacher have been added successfully");
+                JOptionPane.showMessageDialog(null, "Teacher has been added successfully");
                 makeTextFieldEmpty();
             }
             catch (Exception ee){
-                ee.printStackTrace();
                 if((String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:")) || String.valueOf(ee).startsWith("java.sql.SQLException: Data truncated")){
                     JOptionPane.showMessageDialog(null, "Please enter only integer values on age field");
                     makeTextFieldEmpty();
