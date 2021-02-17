@@ -177,7 +177,6 @@ public class StudentAdmission extends JFrame implements ActionListener {
         this.setResizable(false);
         this.add(studentAddimage);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     @Override
@@ -216,11 +215,10 @@ public class StudentAdmission extends JFrame implements ActionListener {
                 String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,level_id,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+level_idInt+","+department_idInt+",'1')";
                 connection.statement.executeUpdate(query);
 
-                JOptionPane.showMessageDialog(null, "Student have been added successfully");
+                JOptionPane.showMessageDialog(null, "Student has been added successfully");
                 makeTextFieldEmpty();
             }
             catch (Exception ee){
-                ee.printStackTrace();
                 if((String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:")) || String.valueOf(ee).startsWith("java.sql.SQLException: Data truncated")){
                     JOptionPane.showMessageDialog(null, "Please enter only integer values on age field");
                     makeTextFieldEmpty();
