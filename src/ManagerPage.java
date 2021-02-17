@@ -68,7 +68,6 @@ public class ManagerPage extends JFrame implements ActionListener {
 
         exit.add(ext);
 
-
         menuBar.add(master);
         menuBar.add(details);
         menuBar.add(updateDetails);
@@ -90,13 +89,25 @@ public class ManagerPage extends JFrame implements ActionListener {
             new TeacherAdmission().setVisible(true);
         }
         else if(msg.equals("New Program")){
-
+            new NewProgram().setVisible(true);
         }
         else if(msg.equals("Student Details")){
-
+            new StudentDetails().setVisible(true);
         }
         else if(msg.equals("Teacher Details")){
-
+            new TeacherDetails().setVisible(true);
+        }
+        else if(msg.equals("Program Details")){
+            new ProgramDetails().setVisible(true);
+        }
+        else if(msg.equals("Update Program")){
+            new UpdateProgram().setVisible(true);
+        }
+        else if(msg.equals("Update Student")){
+            new UpdateStudent().setVisible(true);
+        }
+        else if(msg.equals("Update Teacher")){
+            new UpdateTeacher().setVisible(true);
         }
         else if(msg.equals("Exit")){
             System.exit(0);
