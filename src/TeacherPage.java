@@ -63,6 +63,7 @@ public class TeacherPage extends JFrame implements ActionListener {
         this.add(mySchedule);
         this.add(academicInformation);
         this.add(label);
+        this.setResizable(false);
         this.setVisible(true);
     }
 
