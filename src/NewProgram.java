@@ -62,12 +62,32 @@ public class NewProgram extends JFrame implements ActionListener {
         this.setResizable(false);
         this.add(facultyAddImage);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String dept_name;
+        if (e.getSource() == submit) {
 
+            dept_name = text_dept_name.getText();
+
+            try {
+                conn connection = new conn();
+                String insertQuery = "insert into department(department_name) values ('" + dept_name + "')";
+                connection.statement.executeUpdate(insertQuery);
+                JOptionPane.showMessageDialog(null,"Department has been added successfully");
+                text_dept_name.setText("");
+            } catch (Exception ee) {
+                ee.printStackTrace();
+                if(String.valueOf(ee).startsWith("java.sql.SQLIntegrityConstraintViolationException: Duplicate entry")){
+                    JOptionPane.showMessageDialog(null, "Please enter a new department\nIt is already exists");
+                    text_dept_name.setText("");
+                }
+            }
+        }
+        else if(e.getSource() == cancel){
+            this.setVisible(false);
+        }
     }
 
     public static void main(String[] args) {
