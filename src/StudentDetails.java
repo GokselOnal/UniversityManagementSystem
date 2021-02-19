@@ -12,6 +12,7 @@ public class StudentDetails extends JFrame implements ActionListener{
     JLabel label_level, label_department;
     JComboBox levels,departments;
     JButton search;
+    JScrollPane sp;
 
     StudentDetails(){
         this.setTitle("Student Details");
@@ -39,10 +40,11 @@ public class StudentDetails extends JFrame implements ActionListener{
         levels = new JComboBox(levelsArr);
         levels.setBounds(70,20,150,30);
         levels.setBackground(Color.white);
+        levels.insertItemAt("(None)",0);
+        levels.setSelectedIndex(0);
 
         label_department = new JLabel("Department");
         label_department.setBounds(300,20,70,30);
-
 
         String departmentsArr[] = new String[getDepartmentCount()];
         try{
@@ -60,6 +62,8 @@ public class StudentDetails extends JFrame implements ActionListener{
         departments = new JComboBox(departmentsArr);
         departments.setBounds(380,20,150,30);
         departments.setBackground(Color.white);
+        departments.insertItemAt("(None)",0);
+        departments.setSelectedIndex(0);
 
         search = new JButton("Search");
         search.setBounds(650,20,120,30);
@@ -69,53 +73,9 @@ public class StudentDetails extends JFrame implements ActionListener{
         search.setForeground(Color.BLACK);
         search.setFocusable(false);
 
-        try{
-           conn connection = new conn();
-           String selectQuery= "select * from user where type = 1";
-           ResultSet rs = connection.statement.executeQuery(selectQuery);
+        createTable("select * from user where type = 1",getStudentCount());
 
-           int i = 0;
-           int j = 0;
-           int stCount = getStudentCount();
-           y = new String[stCount][8];
-           while (rs.next()){
-               y[i][j++] = rs.getString("name");
-               y[i][j++] = rs.getString("age");
-               y[i][j++] = rs.getString("e_mail");
-               y[i][j++] = rs.getString("address");
-               y[i][j++] = rs.getString("phone");
-               y[i][j++] = rs.getString("birthdate");
-
-               conn connection2 = new conn();
-               String level_id = rs.getString("level_id");
-               String selectQueryLevel = "select * from level where lid= '"+level_id+"'";
-               ResultSet rsLevel = connection2.statement.executeQuery(selectQueryLevel);
-               rsLevel.next();
-               String level_name = rsLevel.getString("level_name");
-               y[i][j++] = level_name;
-               rsLevel.close();
-
-               conn connection3 = new conn();
-               String department_id = rs.getString("department_id");
-               String selectQueryDep = "select * from department where did= '"+department_id+"'";
-               ResultSet rsDep = connection3.statement.executeQuery(selectQueryDep);
-               rsDep.next();
-               String department_name = rsDep.getString("department_name");
-               y[i][j++] = department_name;
-
-               i++;
-               j=0;
-           }
-           table = new JTable(y,x);
-           table.setGridColor(Color.orange);
-
-        }catch (Exception ee){
-            ee.printStackTrace();
-        }
-
-        JScrollPane sp = new JScrollPane(table);
-        sp.setBounds(20,100,1200,330);
-
+        table.setEnabled(false);
         this.setResizable(false);
         this.getContentPane().setBackground(new Color(255,140,0));
         this.add(label_level);
@@ -134,7 +94,7 @@ public class StudentDetails extends JFrame implements ActionListener{
             String selectQuery = "select count(uid) as count from user where type = 1";
             ResultSet rs= connection.statement.executeQuery(selectQuery);
             rs.next();
-             studentCount += rs.getInt("count");
+            studentCount += rs.getInt("count");
 
         }catch (Exception ee){
             ee.printStackTrace();
@@ -176,6 +136,185 @@ public class StudentDetails extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == search){
 
+            String selectedLevel_name = (String)levels.getSelectedItem();
+            String selectedDep_name = (String)departments.getSelectedItem();
+
+            String lidCombo = "";
+            String didCombo = "";
+
+            try {
+                if(!selectedLevel_name.equals("(None)") && !selectedDep_name.equals("(None)")){
+                    conn connection4 = new conn();
+                    String selectQuery4 = "select lid from level where level_name = '" + selectedLevel_name + "'";
+                    ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
+                    rs4.next();
+                    lidCombo += rs4.getString("lid");
+
+                    conn connection5 = new conn();
+                    String selectQuery5 = "select did from department where department_name = '" + selectedDep_name + "'";
+                    ResultSet rs5 = connection5.statement.executeQuery(selectQuery5);
+                    rs5.next();
+                    didCombo += rs5.getString("did");
+
+                    this.remove(sp);
+                    createTable("select * from user where type = 1 and level_id = '"+lidCombo+"' and department_id = '"+didCombo+"'",getSearchCount());
+                }
+                else if(!selectedLevel_name.equals("(None)") && selectedDep_name.equals("(None)")){
+                    conn connection4 = new conn();
+                    String selectQuery4 = "select lid from level where level_name = '" + selectedLevel_name + "'";
+                    ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
+                    rs4.next();
+                    lidCombo += rs4.getString("lid");
+
+                    this.remove(sp);
+                    createTable("select * from user where type = 1 and level_id = '"+lidCombo+"'",getSearchNoneDepCount());
+                }
+                else if(selectedLevel_name.equals("(None)") && !selectedDep_name.equals("(None)")){
+                    conn connection5 = new conn();
+                    String selectQuery5 = "select did from department where department_name = '" + selectedDep_name + "'";
+                    ResultSet rs5 = connection5.statement.executeQuery(selectQuery5);
+                    rs5.next();
+                    didCombo += rs5.getString("did");
+
+                    this.remove(sp);
+                    createTable("select * from user where type = 1 and department_id = '"+didCombo+"'",getSearchNoneLevCount());
+                }
+                else{
+                    createTable("select * from user where type = 1",getStudentCount());
+                }
+            }
+            catch (Exception ee){
+                ee.printStackTrace();
+            }
+        }
+    }
+
+    public void createTable(String query, int number){
+        try{
+            conn connection = new conn();
+            ResultSet rs = connection.statement.executeQuery(query);
+
+            int i = 0;
+            int j = 0;
+            y = new String[number][8];
+            while (rs.next()){
+                y[i][j++] = rs.getString("name");
+                y[i][j++] = rs.getString("age");
+                y[i][j++] = rs.getString("e_mail");
+                y[i][j++] = rs.getString("address");
+                y[i][j++] = rs.getString("phone");
+                y[i][j++] = rs.getString("birthdate");
+
+                conn connection2 = new conn();
+                String level_id = rs.getString("level_id");
+                String selectQueryLevel = "select * from level where lid= '"+level_id+"'";
+                ResultSet rsLevel = connection2.statement.executeQuery(selectQueryLevel);
+                rsLevel.next();
+                String level_name = rsLevel.getString("level_name");
+                y[i][j++] = level_name;
+                rsLevel.close();
+
+                conn connection3 = new conn();
+                String department_id = rs.getString("department_id");
+                String selectQueryDep = "select * from department where did= '"+department_id+"'";
+                ResultSet rsDep = connection3.statement.executeQuery(selectQueryDep);
+                rsDep.next();
+                String department_name = rsDep.getString("department_name");
+                y[i][j++] = department_name;
+
+                i++;
+                j=0;
+            }
+            table = new JTable(y,x);
+            table.setGridColor(Color.orange);
+
+        }catch (Exception ee){
+            ee.printStackTrace();
+        }
+        sp = new JScrollPane(table);
+        sp.setBounds(20,100,1200,330);
+        this.add(sp);
+    }
+
+    public int getSearchCount(){
+        int studentCount = 0;
+        String selectedLevel_name = (String)levels.getSelectedItem();
+        String selectedDep_name = (String)departments.getSelectedItem();
+
+        String lidCombo = "";
+        String didCombo = "";
+        try{
+            conn connection4 = new conn();
+            String selectQuery4 = "select lid from level where level_name = '"+selectedLevel_name+"'";
+            ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
+            rs4.next();
+            lidCombo += rs4.getString("lid");
+
+            conn connection5 = new conn();
+            String selectQuery5 = "select did from department where department_name = '"+selectedDep_name+"'";
+            ResultSet rs5 = connection5.statement.executeQuery(selectQuery5);
+            rs5.next();
+            didCombo += rs5.getString("did");
+
+            conn connection = new conn();
+            String selectQuery = "select count(uid) as count from user where type = 1 and level_id = '"+lidCombo+"' and department_id = '"+didCombo+"'";
+            ResultSet rs = connection.statement.executeQuery(selectQuery);
+            rs.next();
+            studentCount += rs.getInt("count");
+
+    }catch (Exception e){
+            e.printStackTrace();
+        }
+        return studentCount;
+    }
+
+    public int getSearchNoneDepCount(){
+        int studentCount = 0;
+        String selectedLevel_name = (String)levels.getSelectedItem();
+
+        String lidCombo = "";
+        try{
+            conn connection4 = new conn();
+            String selectQuery4 = "select lid from level where level_name = '"+selectedLevel_name+"'";
+            ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
+            rs4.next();
+            lidCombo += rs4.getString("lid");
+
+            conn connection = new conn();
+            String selectQuery = "select count(uid) as count from user where type = 1 and level_id = '"+lidCombo+"'";
+            ResultSet rs = connection.statement.executeQuery(selectQuery);
+            rs.next();
+            studentCount += rs.getInt("count");
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return studentCount;
+    }
+
+    public int getSearchNoneLevCount(){
+        int studentCount = 0;
+        String selectedDep_name = (String)departments.getSelectedItem();
+
+        String didCombo = "";
+        try{
+            conn connection5 = new conn();
+            String selectQuery5 = "select did from department where department_name = '"+selectedDep_name+"'";
+            ResultSet rs5 = connection5.statement.executeQuery(selectQuery5);
+            rs5.next();
+            didCombo += rs5.getString("did");
+
+            conn connection = new conn();
+            String selectQuery = "select count(uid) as count from user where type = 1 and department_id = '"+didCombo+"'";
+            ResultSet rs = connection.statement.executeQuery(selectQuery);
+            rs.next();
+            studentCount += rs.getInt("count");
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return studentCount;
     }
 }
