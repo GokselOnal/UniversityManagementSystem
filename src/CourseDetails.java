@@ -67,11 +67,11 @@ public class CourseDetails extends JFrame implements ActionListener {
         String[] depArr = new String[getDepCount()];
         try{
             conn connection = new conn();
-            String query= "select department_name from department";
+            String query= "select did from department";
             ResultSet rs = connection.statement.executeQuery(query);
             int i = 0;
             while (rs.next()){
-                depArr[i] = rs.getString("department_name");
+                depArr[i] = rs.getString("did");
                 i++;
             }
         }catch (Exception e){
@@ -83,7 +83,7 @@ public class CourseDetails extends JFrame implements ActionListener {
         combo_department.setBackground(Color.white);
 
         search = new JButton("Search");
-        search.setBounds(1350,20,120,30);
+        search.setBounds(1390,20,120,30);
         search.setFont(new Font("serif",Font.BOLD,15));
         search.addActionListener(this);
         search.setBackground(Color.white);
@@ -106,7 +106,22 @@ public class CourseDetails extends JFrame implements ActionListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == search){
+            String year = (String) combo_year.getSelectedItem();
+            String semester = (String) combo_semester.getSelectedItem();
+            String credit = (String) combo_credit.getSelectedItem();
+            String department = (String) combo_department.getSelectedItem();
 
+            try {
+                conn connection = new conn();
+                ResultSet rs = connection.statement.executeQuery("select count(cid) as count from course where year = '"+year+"' and  semester = '"+semester+"' and credit = '"+credit+"' and department_id = '"+department+"'");
+                rs.next();
+                int searchCount = rs.getInt("count");
+                createTable("select * from course where year = '"+year+"' and  semester = '"+semester+"' and credit = '"+credit+"' and department_id = '"+department+"'",searchCount);
+            }catch (Exception ee){
+                ee.printStackTrace();
+            }
+        }
     }
     public void createTable(String query, int number){
         try{
