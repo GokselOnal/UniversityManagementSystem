@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 public class NewCourse extends JFrame implements ActionListener {
 
     JLabel studentAddimage;
-    JLabel headline,courseId,title,credit,semester,startTime,year,day,duration,prerequisite,department;
+    JLabel headline,courseId,title,teacher,credit,semester,startTime,year,day,duration,prerequisite,department;
     JTextField text_courseId,text_title,text_year;
-    JComboBox combo_credit,combo_semester,combo_day,combo_startTime,combo_duration,combo_prerequisite,combo_department;
+    JComboBox combo_teacher,combo_credit,combo_semester,combo_day,combo_startTime,combo_duration,combo_prerequisite,combo_department;
     JButton submit;
     JButton cancel;
 
@@ -32,76 +32,104 @@ public class NewCourse extends JFrame implements ActionListener {
         headline.setForeground(Color.black);
 
         courseId = new JLabel("Course id");
-        courseId.setBounds(100,150,100,30);
+        courseId.setBounds(100,100,100,30);
         courseId.setFont(new Font("serif",Font.BOLD,15));
 
         text_courseId = new JTextField();
-        text_courseId.setBounds(200,150,150,30);
+        text_courseId.setBounds(200,100,150,30);
 
         title = new JLabel("Title");
-        title.setBounds(100,250,100,30);
+        title.setBounds(100,200,100,30);
         title.setFont(new Font("serif",Font.BOLD,15));
 
         text_title = new JTextField();
-        text_title.setBounds(200,250,150,30);
+        text_title.setBounds(200,200,150,30);
+
+        teacher = new JLabel("Teacher");
+        teacher.setBounds(100,300,100,30);
+        teacher.setFont(new Font("serif",Font.BOLD,15));
+
+        String[] teacherArr = new String[getTeacherCount()];
+        int i= 0;
+        try {
+            conn connection = new conn();
+            String selectQuery = "select uid from user where type = 2";
+            ResultSet rs = connection.statement.executeQuery(selectQuery);
+            while (rs.next()){
+                int teacher_id = rs.getInt("uid");
+                conn connection2 = new conn();
+                String query2 = "select name from user where uid ="+ teacher_id;
+                ResultSet rs2 = connection2.statement.executeQuery(query2);
+                rs2.next();
+                String teacherName = rs2.getString("name");
+                teacherArr[i] = teacherName;
+                i++;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        combo_teacher = new JComboBox(teacherArr);
+        combo_teacher.setBounds(200,300,150,30);
+        combo_teacher.setBackground(Color.white);
 
         credit = new JLabel("Credit");
-        credit.setBounds(100,350,100,30);
+        credit.setBounds(100,400,100,30);
         credit.setFont(new Font("serif",Font.BOLD,15));
 
         String[] creditArr = {"2","4","6"};
         combo_credit = new JComboBox(creditArr);
-        combo_credit.setBounds(200,350,150,30);
+        combo_credit.setBounds(200,400,150,30);
         combo_credit.setBackground(Color.white);
         combo_credit.setSelectedIndex(2);
 
         semester = new JLabel("Semester");
-        semester.setBounds(100,450,100,30);
+        semester.setBounds(100,500,100,30);
         semester.setFont(new Font("serif",Font.BOLD,15));
 
         String[] semesterArr = {"Fall","Spring"};
         combo_semester = new JComboBox(semesterArr);
-        combo_semester.setBounds(200,450,150,30);
+        combo_semester.setBounds(200,500,150,30);
         combo_semester.setBackground(Color.white);
 
         year = new JLabel("Year");
-        year.setBounds(100,550,100,30);
+        year.setBounds(100,600,100,30);
         year.setFont(new Font("serif",Font.BOLD,15));
 
         text_year = new JTextField("yyyy");
-        text_year.setBounds(200,550,150,30);
+        text_year.setBounds(200,600,150,30);
 
         day = new JLabel("Day");
-        day.setBounds(450,150,100,30);
+        day.setBounds(450,100,100,30);
         day.setFont(new Font("serif",Font.BOLD,15));
 
         String[] dayArr = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
-        combo_day = new JComboBox(semesterArr);
-        combo_day.setBounds(550,150,150,30);
+        combo_day = new JComboBox(dayArr);
+        combo_day.setBounds(550,100,150,30);
         combo_day.setBackground(Color.white);
         combo_day.setSelectedIndex(0);
 
         startTime = new JLabel("Start time");
-        startTime.setBounds(450,250,100,30);
+        startTime.setBounds(450,200,100,30);
         startTime.setFont(new Font("serif",Font.BOLD,15));
 
         String[] timeArr = {"08:40:00","09:40:00","10:40:00","11:40:00","12:40:00","13:40:00","14:40:00","15:40:00","16:40:00","17:40:00","18:40:00"};
         combo_startTime = new JComboBox(timeArr);
-        combo_startTime.setBounds(550,250,150,30);
+        combo_startTime.setBounds(550,200,150,30);
         combo_startTime.setBackground(Color.white);
 
         duration = new JLabel("Duration");
-        duration.setBounds(450,350,100,30);
+        duration.setBounds(450,300,100,30);
         duration.setFont(new Font("serif",Font.BOLD,15));
 
         String[] durationArr = {"2","3","4"};
         combo_duration = new JComboBox(durationArr);
-        combo_duration.setBounds(550,350,150,30);
+        combo_duration.setBounds(550,300,150,30);
         combo_duration.setBackground(Color.white);
         combo_duration.setSelectedIndex(0);
 
         prerequisite = new JLabel("Prerequisite");
-        prerequisite.setBounds(450,450,100,30);
+        prerequisite.setBounds(450,400,100,30);
         prerequisite.setFont(new Font("serif",Font.BOLD,15));
 
         String[] courseArr = new String[getCourseCount()];
@@ -109,23 +137,23 @@ public class NewCourse extends JFrame implements ActionListener {
             conn connection = new conn();
             String selectQuery = "select * from course";
             ResultSet rs = connection.statement.executeQuery(selectQuery);
-            int i = 0;
+            int j = 0;
             while (rs.next()) {
-                courseArr[i] = rs.getString("cid");
-                i++;
+                courseArr[j] = rs.getString("cid");
+                j++;
             }
         }catch (Exception e){
             e.printStackTrace();
         }
 
         combo_prerequisite = new JComboBox(courseArr);
-        combo_prerequisite.setBounds(550,450,150,30);
+        combo_prerequisite.setBounds(550,400,150,30);
         combo_prerequisite.setBackground(Color.white);
         combo_prerequisite.insertItemAt("(None)",0);
         combo_prerequisite.setSelectedIndex(0);
 
         department = new JLabel("Department");
-        department.setBounds(450,550,100,30);
+        department.setBounds(450,500,100,30);
         department.setFont(new Font("serif",Font.BOLD,15));
 
         String[] depArr = new String[getDepCount()];
@@ -133,17 +161,17 @@ public class NewCourse extends JFrame implements ActionListener {
             conn connection = new conn();
             String selectQuery = "select * from department";
             ResultSet rs = connection.statement.executeQuery(selectQuery);
-            int i = 0;
+            int k = 0;
             while (rs.next()) {
-                depArr[i] = rs.getString("did");
-                i++;
+                depArr[k] = rs.getString("did");
+                k++;
             }
         }catch (Exception e){
             e.printStackTrace();
         }
 
         combo_department = new JComboBox(depArr);
-        combo_department.setBounds(550,550,150,30);
+        combo_department.setBounds(550,500,150,30);
         combo_department.setBackground(Color.white);
 
         submit = new JButton("Submit");
@@ -164,6 +192,8 @@ public class NewCourse extends JFrame implements ActionListener {
         studentAddimage.add(courseId);
         studentAddimage.add(text_courseId);
         studentAddimage.add(title);
+        studentAddimage.add(teacher);
+        studentAddimage.add(combo_teacher);
         studentAddimage.add(text_title);
         studentAddimage.add(credit);
         studentAddimage.add(combo_credit);
@@ -193,12 +223,42 @@ public class NewCourse extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == submit) {
+            String course_id = text_courseId.getText();//6 digit max
+            String teacher_name = (String) combo_teacher.getSelectedItem();
+            String title = text_title.getText();
+            String credit = (String) combo_credit.getSelectedItem();
+            String semester = (String) combo_semester.getSelectedItem();
+            String year = text_year.getText();
+            String day = (String) combo_day.getSelectedItem();
+            String start_time = (String) combo_startTime.getSelectedItem();
+            String duration = (String) combo_duration.getSelectedItem();
+            String department_id = (String) combo_department.getSelectedItem();
+
             try {
                 conn connection = new conn();
-                String insertQuery = "";
+                String query = "select * from user where name = '"+teacher_name+"'";
+                ResultSet rs = connection.statement.executeQuery(query);
+                rs.next();
+                String teacher_id = rs.getString("uid");
+                String insertQuery = "insert into course(cid, teacher, title, credit, semester, year, day, start_time, duration, department_id) values('"+course_id+"','"+teacher_id+"','"+title+"','"+credit+"','"+semester+"','"+year+"','"+day+"','"+start_time+"','"+duration+"','"+department_id+"')";
                 connection.statement.executeUpdate(insertQuery);
             } catch (Exception ee) {
                 ee.printStackTrace();
+                if((String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column"))){
+                    JOptionPane.showMessageDialog(null, "Please enter max 6 digit id on course id");
+                    text_courseId.setText("");
+                    text_year.setText("");
+                }
+                else if(String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Incorrect date value:") || String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:") || String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Out of range")){
+                    JOptionPane.showMessageDialog(null, "Please enter year correctly (yyyy)");
+                    text_courseId.setText("");
+                    text_year.setText("");
+                }
+                else if(String.valueOf(ee).startsWith("java.sql.SQLIntegrityConstraintViolationException: Duplicate entry")){
+                    JOptionPane.showMessageDialog(null, "Please enter a new course\n The Course Id is already exists");
+                    text_courseId.setText("");
+                    text_year.setText("");
+                }
             }
         }
         else if(e.getSource() == cancel){
@@ -238,5 +298,19 @@ public class NewCourse extends JFrame implements ActionListener {
             ee.printStackTrace();
         }
         return depCount;
+    }
+    public int getTeacherCount() {
+        int teacherCount = 0;
+        try{
+            conn connection = new conn();
+            String selectQuery = "select count(uid) as count from user where type = 2";
+            ResultSet rs= connection.statement.executeQuery(selectQuery);
+            rs.next();
+            teacherCount += rs.getInt("count");
+
+        }catch (Exception ee){
+            ee.printStackTrace();
+        }
+        return teacherCount;
     }
 }
