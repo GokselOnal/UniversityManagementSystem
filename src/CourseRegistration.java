@@ -12,42 +12,114 @@ import java.util.Calendar;
 import java.util.Vector;
 
 public class CourseRegistration extends JFrame implements ActionListener {
-    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-02-23";//unutma
+    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-02-23";
     static String registrationDateFall = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-09-01";
     JTable table;
     JScrollPane sp;
     String x[] = {"Course Id","Teacher","Title","Credit","Semester","Year","Day","Start Time","Duration","Prerequisite","Quota","Department"};
     String y[][];
     ArrayList<String> regis_lec = new ArrayList<String>();
-    JButton add,submit;
+    JLabel label_credit, label_department, label_semester, label_year;
+    JComboBox combo_credit,combo_department,combo_semester, combo_year;
+    JButton add,search;
 
     CourseRegistration(){
         this.setTitle("Course Registration");
-        this.setSize(1550,500);
+        this.setSize(1550,550);
         this.setLayout(null);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
 
+        label_year = new JLabel("Year");
+        label_year.setBounds(25,20,80,30);
+        label_year.setFont(new Font("serif",Font.BOLD,15));
+
+        String[] yearArr = new String[getYearCount()];
+        try{
+            conn connection = new conn();
+            String query= "select distinct(year) from course";
+            ResultSet rs = connection.statement.executeQuery(query);
+            int i = 0;
+            while (rs.next()){
+                yearArr[i] = rs.getString("year").substring(0,4);
+                i++;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        combo_year = new JComboBox(yearArr);
+        combo_year.setBounds(105,20,150,30);
+        combo_year.setBackground(Color.white);
+
+        label_semester = new JLabel("Semester");
+        label_semester.setBounds(350,20,80,30);
+        label_semester.setFont(new Font("serif",Font.BOLD,15));
+
+        String[] semesterArr = {"Fall","Spring"};
+        combo_semester = new JComboBox(semesterArr);
+        combo_semester.setBounds(430,20,150,30);
+        combo_semester.setBackground(Color.white);
+
+        label_credit = new JLabel("Credit");
+        label_credit.setBounds(700,20,80,30);
+        label_credit.setFont(new Font("serif",Font.BOLD,15));
+
+        String[] creditArr = {"2","4","6"};
+        combo_credit = new JComboBox(creditArr);
+        combo_credit.setBounds(780,20,150,30);
+        combo_credit.setBackground(Color.white);
+
+        label_department = new JLabel("Department");
+        label_department.setBounds(1065,20,80,30);
+        label_department.setFont(new Font("serif",Font.BOLD,15));
+
+        String[] depArr = new String[getDepCount()];
+        try{
+            conn connection = new conn();
+            String query= "select did from department";
+            ResultSet rs = connection.statement.executeQuery(query);
+            int i = 0;
+            while (rs.next()){
+                depArr[i] = rs.getString("did");
+                i++;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        combo_department = new JComboBox(depArr);
+        combo_department.setBounds(1165,20,150,30);
+        combo_department.setBackground(Color.white);
+
+        search = new JButton("Search");
+        search.setBounds(1390,20,120,30);
+        search.setFont(new Font("serif",Font.BOLD,15));
+        search.addActionListener(this);
+        search.setBackground(Color.white);
+        search.setForeground(Color.BLACK);
+        search.setFocusable(false);
+
         createTable("select * from course",getCourseCount());
 
         add = new JButton("Add");
-        add.setBounds(100,380,120,30);
+        add.setBounds(100,450,120,30);
         add.setFont(new Font("serif",Font.BOLD,15));
         add.addActionListener(this);
         add.setBackground(Color.white);
         add.setForeground(Color.BLACK);
         add.setFocusable(false);
 
-        /*submit = new JButton("Submit");
-        submit.setBounds(400,380,120,30);
-        submit.setFont(new Font("serif",Font.BOLD,15));
-        submit.addActionListener(this);
-        submit.setBackground(Color.white);
-        submit.setForeground(Color.BLACK);
-        submit.setFocusable(false);*/
-
-
         this.getContentPane().setBackground(new Color(255,140,0));
+        this.add(label_year);
+        this.add(combo_year);
+        this.add(label_semester);
+        this.add(combo_semester);
+        this.add(label_credit);
+        this.add(combo_credit);
+        this.add(label_department);
+        this.add(combo_department);
+        this.add(search);
         this.add(add);
         this.setVisible(true);
     }
@@ -79,13 +151,9 @@ public class CourseRegistration extends JFrame implements ActionListener {
                 String selectedStartTime = rs.getString("start_time");
                 String selectedDuration = rs.getString("duration");
                 String selectedPrerequisite = rs.getString("prerequisite");
+                int selectedCredit = rs.getInt("credit");
                 int selectedQuota = rs.getInt("quota");
-                System.out.println(selectedQuota);
-                System.out.println(selectedCourseId);
-                /*System.out.println(selectedDay);
-                System.out.println(selectedStartTime);
-                System.out.println(selectedDuration);*/
-                System.out.println(selectedPrerequisite);
+
                 int selectedDayIndex = 0;
                 for(int i = 0; i <program[0].length; i++){
                     if(program[0][i].equals(selectedDay)){
@@ -108,10 +176,14 @@ public class CourseRegistration extends JFrame implements ActionListener {
                 String user_id = rs2.getString("uid");
 
                 conn connection3 = new conn();
-                LocalDate date = LocalDate.now();
+                conn connection4 = new conn();
+
                 int year = Calendar.getInstance().get(Calendar.YEAR);
 
-                //kredi olaylarına da dikkat!!
+                String query4 = "select credit from user where uid = '"+user_id+"'";
+                ResultSet rs4 = connection4.statement.executeQuery(query4);
+                rs4.next();
+                int currentCredit = rs4.getInt("credit");
 
                 String selectSchedule = "select * from schedule where user_id = '"+user_id+"' and year !='"+registrationDateSpring+"' and year !='"+registrationDateFall+"'";
                 ResultSet rs3 = connection3.statement.executeQuery(selectSchedule);
@@ -120,26 +192,27 @@ public class CourseRegistration extends JFrame implements ActionListener {
                 while (rs3.next()){
                     history.add(rs3.getString("course_id"));
                 }
-                if((String.valueOf(date).equals(registrationDateSpring) || String.valueOf(date).equals(registrationDateFall))){ //bunu registration butonuna tası
-                    if((selectedPrerequisite == null || history.contains(selectedPrerequisite)) && (selectedQuota > 0)) {
-                        for (int i = 0; i < Integer.parseInt(selectedDuration); i++) {
-                            String insertQuery = "insert into schedule(user_id,course_id,year,dayIndex,timeIndex) values('" + user_id +"','"+selectedCourseId+"','"+year+"','" + selectedDayIndex + "','" + (selectedTimeIndex + i) + "')";
-                            connection2.statement.executeUpdate(insertQuery);
-                        }
-                        String updateQuery =  "update course set quota = quota - 1 where cid = '"+selectedCourseId+"'";
-                        connection2.statement.executeUpdate(updateQuery);
-                        JOptionPane.showMessageDialog(null,"aldın");
-                        this.remove(sp);
-                        createTable("select * from course",getCourseCount());
+                //dersi almış olması değil, basarıyla geçmiş olma durumuna göre bakmayı unutma!!!
+                //suan hangi dönemdeysen(fall,spring) default tableda o dönemin dersleri cıksın
+                if((selectedPrerequisite == null || history.contains(selectedPrerequisite)) && (selectedQuota > 0) && currentCredit > 0) {
+                    for (int i = 0; i < Integer.parseInt(selectedDuration); i++) {
+                        String insertQuery = "insert into schedule(user_id,course_id,year,dayIndex,timeIndex) values('" + user_id +"','"+selectedCourseId+"','"+year+"','" + selectedDayIndex + "','" + (selectedTimeIndex + i) + "')";
+                        connection2.statement.executeUpdate(insertQuery);
                     }
-                    else if(selectedPrerequisite != null && !history.contains(selectedPrerequisite)){
-                        JOptionPane.showMessageDialog(null,"prerequisete");
-                    }
-                    else if(selectedQuota <= 0){
-                        JOptionPane.showMessageDialog(null,"not enough quota");
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(null,"suanda ders alım tarihi degil");
+                    String updateQuery =  "update course set quota = quota - 1 where cid = '"+selectedCourseId+"'";
+                    connection2.statement.executeUpdate(updateQuery);
+                    String newCredit = String.valueOf(currentCredit - selectedCredit);
+                    String decCredit = "update user set credit ="+newCredit+" where uid = '"+user_id+"'";
+                    connection2.statement.executeUpdate(decCredit);
+                    JOptionPane.showMessageDialog(null,"aldın");
+                    this.remove(sp);
+                    createTable("select * from course",getCourseCount());
+                }
+                else if(selectedPrerequisite != null && !history.contains(selectedPrerequisite)){
+                    JOptionPane.showMessageDialog(null,"prerequisete");
+                }
+                else if(selectedQuota <= 0){
+                    JOptionPane.showMessageDialog(null,"not enough quota");
                 }
             }catch (Exception ee){
                 ee.printStackTrace();
@@ -148,26 +221,22 @@ public class CourseRegistration extends JFrame implements ActionListener {
                 }
             }
         }
-        else if(e.getSource() == submit) {
-           /* try {
-                String userName = Login.Username;
+        else if(e.getSource() == search){
+            String year = (String) combo_year.getSelectedItem();
+            String semester = (String) combo_semester.getSelectedItem();
+            String credit = (String) combo_credit.getSelectedItem();
+            String department = (String) combo_department.getSelectedItem();
 
+            try {
                 conn connection = new conn();
-                String selectQuery = "select uid from user where name = '"+userName+"'";
-                ResultSet rs = connection.statement.executeQuery(selectQuery);
+                ResultSet rs = connection.statement.executeQuery("select count(cid) as count from course where year = '"+year+"' and  semester = '"+semester+"' and credit = '"+credit+"' and department_id = '"+department+"'");
                 rs.next();
-                String user_id = rs.getString("uid");
-
-                int lecSize = regis_lec.size();
-                String insertQuery = "insert into course_grouped (cgid) values('"+user_id+"')";
-                connection.statement.executeUpdate(insertQuery);
-                for (int i = 1; i <= lecSize; i++) {
-                    String updateQuery = "update course_grouped set course"+i+" = '"+regis_lec.get(i-1)+"'";
-                    connection.statement.executeUpdate(updateQuery);
-                }
+                this.remove(sp);
+                int searchCount = rs.getInt("count");
+                createTable("select * from course where year = '"+year+"' and  semester = '"+semester+"' and credit = '"+credit+"' and department_id = '"+department+"'",searchCount);
             }catch (Exception ee){
                 ee.printStackTrace();
-            }*/
+            }
         }
     }
 
@@ -213,9 +282,10 @@ public class CourseRegistration extends JFrame implements ActionListener {
             ee.printStackTrace();
         }
         sp = new JScrollPane(table);
-        sp.setBounds(20,20,1500,330);
+        sp.setBounds(20,95,1500,330);
         this.add(sp);
     }
+
     public int getCourseCount(){
         int courseCount= 0;
         try{
@@ -229,6 +299,36 @@ public class CourseRegistration extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         return courseCount;
+    }
+
+    public int getYearCount(){
+        int yearCount= 0;
+        try{
+            conn connection = new conn();
+            String query = "select count(distinct(year)) as count from course";
+            ResultSet rs = connection.statement.executeQuery(query);
+            rs.next();
+            int countDep = rs.getInt("count");
+            yearCount += countDep;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return yearCount;
+    }
+
+    public int getDepCount(){
+        int depCount= 0;
+        try{
+            conn connection = new conn();
+            String query = "select count(did) as count from department";
+            ResultSet rs = connection.statement.executeQuery(query);
+            rs.next();
+            int countDep = rs.getInt("count");
+            depCount += countDep;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return depCount;
     }
 
     public static void main(String[] args) {
