@@ -6,10 +6,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Vector;
 
 public class CourseRegistration extends JFrame implements ActionListener {
+    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-02-23";//unutma
+    static String registrationDateFall = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-09-01";
     JTable table;
     JScrollPane sp;
     String x[] = {"Course Id","Teacher","Title","Credit","Semester","Year","Day","Start Time","Duration","Prerequisite","Quota","Department"};
@@ -34,18 +38,17 @@ public class CourseRegistration extends JFrame implements ActionListener {
         add.setForeground(Color.BLACK);
         add.setFocusable(false);
 
-        submit = new JButton("Submit");
+        /*submit = new JButton("Submit");
         submit.setBounds(400,380,120,30);
         submit.setFont(new Font("serif",Font.BOLD,15));
         submit.addActionListener(this);
         submit.setBackground(Color.white);
         submit.setForeground(Color.BLACK);
-        submit.setFocusable(false);
+        submit.setFocusable(false);*/
 
 
         this.getContentPane().setBackground(new Color(255,140,0));
         this.add(add);
-        this.add(submit);
         this.setVisible(true);
     }
     @Override
@@ -69,15 +72,20 @@ public class CourseRegistration extends JFrame implements ActionListener {
                     {"20:40:00", "20:40:00", "20:40:00", "20:40:00", "20:40:00", "20:40:00"}};//13
             try {
                 conn connection = new conn();
-                String selectQuery = "select day, start_time, duration from course where cid = '" + selectedCourseId + "'";
+                String selectQuery = "select * from course where cid = '" + selectedCourseId + "'";
                 ResultSet rs = connection.statement.executeQuery(selectQuery);
                 rs.next();
                 String selectedDay = rs.getString("day");
                 String selectedStartTime = rs.getString("start_time");
                 String selectedDuration = rs.getString("duration");
+                String selectedPrerequisite = rs.getString("prerequisite");
+                int selectedQuota = rs.getInt("quota");
+                System.out.println(selectedQuota);
+                System.out.println(selectedCourseId);
                 /*System.out.println(selectedDay);
                 System.out.println(selectedStartTime);
                 System.out.println(selectedDuration);*/
+                System.out.println(selectedPrerequisite);
                 int selectedDayIndex = 0;
                 for(int i = 0; i <program[0].length; i++){
                     if(program[0][i].equals(selectedDay)){
@@ -99,15 +107,44 @@ public class CourseRegistration extends JFrame implements ActionListener {
                 rs2.next();
                 String user_id = rs2.getString("uid");
 
-                for(int i = 0 ; i < Integer.parseInt(selectedDuration); i++) {
-                    String insertQuery = "insert into schedule(user_id,dayIndex,timeIndex) values('" + user_id + "','" + selectedDayIndex + "','" + (selectedTimeIndex+i) + "')";
-                    connection2.statement.executeUpdate(insertQuery);
+                conn connection3 = new conn();
+                LocalDate date = LocalDate.now();
+                int year = Calendar.getInstance().get(Calendar.YEAR);
+
+                //kredi olaylarına da dikkat!!
+
+                String selectSchedule = "select * from schedule where user_id = '"+user_id+"' and year !='"+registrationDateSpring+"' and year !='"+registrationDateFall+"'";
+                ResultSet rs3 = connection3.statement.executeQuery(selectSchedule);
+                ArrayList<String> history = new ArrayList<String>();
+
+                while (rs3.next()){
+                    history.add(rs3.getString("course_id"));
                 }
-                regis_lec.add(selectedCourseId);
+                if((String.valueOf(date).equals(registrationDateSpring) || String.valueOf(date).equals(registrationDateFall))){ //bunu registration butonuna tası
+                    if((selectedPrerequisite == null || history.contains(selectedPrerequisite)) && (selectedQuota > 0)) {
+                        for (int i = 0; i < Integer.parseInt(selectedDuration); i++) {
+                            String insertQuery = "insert into schedule(user_id,course_id,year,dayIndex,timeIndex) values('" + user_id +"','"+selectedCourseId+"','"+year+"','" + selectedDayIndex + "','" + (selectedTimeIndex + i) + "')";
+                            connection2.statement.executeUpdate(insertQuery);
+                        }
+                        String updateQuery =  "update course set quota = quota - 1 where cid = '"+selectedCourseId+"'";
+                        connection2.statement.executeUpdate(updateQuery);
+                        JOptionPane.showMessageDialog(null,"aldın");
+                        this.remove(sp);
+                        createTable("select * from course",getCourseCount());
+                    }
+                    else if(selectedPrerequisite != null && !history.contains(selectedPrerequisite)){
+                        JOptionPane.showMessageDialog(null,"prerequisete");
+                    }
+                    else if(selectedQuota <= 0){
+                        JOptionPane.showMessageDialog(null,"not enough quota");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null,"suanda ders alım tarihi degil");
+                }
             }catch (Exception ee){
                 ee.printStackTrace();
                 if(String.valueOf(ee).startsWith("java.sql.SQLIntegrityConstraintViolationException: Duplicate entry")){
-                    JOptionPane.showMessageDialog(null,"You can't take this course");
+                    JOptionPane.showMessageDialog(null,"You can't take this course");//saat uymuyor, dersi daha önce almıs vermiş(unutma)
                 }
             }
         }
