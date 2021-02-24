@@ -100,7 +100,16 @@ public class CourseRegistration extends JFrame implements ActionListener {
         search.setForeground(Color.BLACK);
         search.setFocusable(false);
 
-        createTable("select * from course",getCourseCount());
+        LocalDate curDate = LocalDate.now();
+        String month = String.valueOf(curDate).substring(5,7);
+
+        if(Integer.parseInt(month.substring(1)) < 9){
+            createTable("select * from course where semester = 'Spring'",getCourseCount());
+        }
+        else{
+            createTable("select * from course where semester = 'Fall'",getCourseCount());
+        }
+
 
         add = new JButton("Add");
         add.setBounds(100,450,120,30);
@@ -193,7 +202,6 @@ public class CourseRegistration extends JFrame implements ActionListener {
                     history.add(rs3.getString("course_id"));
                 }
                 //dersi almış olması değil, basarıyla geçmiş olma durumuna göre bakmayı unutma!!!
-                //suan hangi dönemdeysen(fall,spring) default tableda o dönemin dersleri cıksın
                 if((selectedPrerequisite == null || history.contains(selectedPrerequisite)) && (selectedQuota > 0) && currentCredit > 0) {
                     for (int i = 0; i < Integer.parseInt(selectedDuration); i++) {
                         String insertQuery = "insert into schedule(user_id,course_id,year,dayIndex,timeIndex) values('" + user_id +"','"+selectedCourseId+"','"+year+"','" + selectedDayIndex + "','" + (selectedTimeIndex + i) + "')";
@@ -249,8 +257,6 @@ public class CourseRegistration extends JFrame implements ActionListener {
             int j = 0;
             y = new String[number][13];
             while (rs.next()){
-                JCheckBox cb = new JCheckBox();
-
                 y[i][j++] = rs.getString("cid");
 
                 conn connection2 = new conn();
