@@ -2,7 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.util.Calendar;
 
 public class Exams extends JFrame implements ActionListener {
     JTable table;
@@ -40,7 +43,7 @@ public class Exams extends JFrame implements ActionListener {
         }
 
         select = new JButton("Select");
-        select.setBounds(220,20,100,30);
+        select.setBounds(150,20,100,30);
         select.setFont(new Font("serif",Font.BOLD,15));
         select.addActionListener(this);
         select.setBackground(Color.white);
@@ -108,7 +111,7 @@ public class Exams extends JFrame implements ActionListener {
             sp.setBounds(40,60,500,650);
 
             submit = new JButton("Submit");
-            submit.setBounds(380,720,100,30);
+            submit.setBounds(435,720,100,30);
             submit.setFont(new Font("serif",Font.BOLD,15));
             submit.addActionListener(this);
             submit.setBackground(Color.white);
@@ -120,7 +123,25 @@ public class Exams extends JFrame implements ActionListener {
             this.repaint();
         }
         else if(e.getSource() == submit){
-            //sınav sonuclarını gir
+            String selectedCourse = (String)courses.getSelectedItem();
+            //System.out.println(selectedCourse);
+            String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+            try {
+                conn connection = new conn();
+
+                for (int i = 0; i < getCourseStudentCount(selectedCourse); i++) {
+                    String selectedStudentName = (String) table.getModel().getValueAt(i, 0);
+                    ResultSet rs = connection.statement.executeQuery("select uid from user where name = '"+selectedStudentName+"'");
+                    rs.next();
+                    String selectedUserId = rs.getString("uid");
+                    String selectedStudentGrade = (String) table.getModel().getValueAt(i, 1);
+                    //System.out.println(selectedStudentName +selectedStudentGrade);
+                    String insertQuery = "insert into notes (user_id, course_id, year, grade) values('"+selectedUserId+"','"+selectedCourse+"','"+year+"','"+selectedStudentGrade+"')";
+                    connection.statement.executeUpdate(insertQuery);
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
     }
 
