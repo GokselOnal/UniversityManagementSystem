@@ -13,7 +13,7 @@ public class Exams extends JFrame implements ActionListener {
     String x[] = {"Student","Grade"};
     String y[][];
     JComboBox courses;
-    JButton select,submit;
+    JButton select,submit,view;
     Exams(){
         this.setTitle("Exams");
         this.setSize(600,800);
@@ -40,6 +40,7 @@ public class Exams extends JFrame implements ActionListener {
 
         }catch (Exception e){
             e.printStackTrace();
+
         }
 
         select = new JButton("Select");
@@ -50,9 +51,18 @@ public class Exams extends JFrame implements ActionListener {
         select.setForeground(Color.BLACK);
         select.setFocusable(false);
 
+        view = new JButton("View");
+        view.setBounds(260,20,100,30);
+        view.setFont(new Font("serif",Font.BOLD,15));
+        view.addActionListener(this);
+        view.setBackground(Color.white);
+        view.setForeground(Color.BLACK);
+        view.setFocusable(false);
+
         this.getContentPane().setBackground(new Color(255,140,0));
         this.add(courses);
         this.add(select);
+        //this.add(view);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
@@ -126,6 +136,7 @@ public class Exams extends JFrame implements ActionListener {
             String selectedCourse = (String)courses.getSelectedItem();
             //System.out.println(selectedCourse);
             String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+            String alph = "";
             try {
                 conn connection = new conn();
 
@@ -136,11 +147,52 @@ public class Exams extends JFrame implements ActionListener {
                     String selectedUserId = rs.getString("uid");
                     String selectedStudentGrade = (String) table.getModel().getValueAt(i, 1);
                     //System.out.println(selectedStudentName +selectedStudentGrade);
-                    String insertQuery = "insert into notes (user_id, course_id, year, grade) values('"+selectedUserId+"','"+selectedCourse+"','"+year+"','"+selectedStudentGrade+"')";
-                    connection.statement.executeUpdate(insertQuery);
+                    if((Integer.valueOf(selectedStudentGrade) >= 90) && (Integer.valueOf(selectedStudentGrade) <= 100)){
+                        alph += "A";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 85) && (Integer.valueOf(selectedStudentGrade) < 90)){
+                        alph += "A-";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 80) && (Integer.valueOf(selectedStudentGrade) < 85)){
+                        alph += "B+";
+                    } else if((Integer.valueOf(selectedStudentGrade) >= 75) && (Integer.valueOf(selectedStudentGrade) < 80)){
+                        alph += "B";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 70) && (Integer.valueOf(selectedStudentGrade) < 75)){
+                        alph += "B-";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 65) && (Integer.valueOf(selectedStudentGrade) < 70)){
+                        alph += "C+";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 60) && (Integer.valueOf(selectedStudentGrade) < 65)){
+                        alph += "C";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 55) && (Integer.valueOf(selectedStudentGrade) < 60)){
+                        alph += "C-";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 50) && (Integer.valueOf(selectedStudentGrade) < 55)){
+                        alph += "D+";
+                    }else if((Integer.valueOf(selectedStudentGrade) >= 45) && (Integer.valueOf(selectedStudentGrade) < 50)){
+                        alph += "D";
+                    }else{
+                        alph += "F";
+                    }
+                    if((Integer.valueOf(selectedStudentGrade) >= 0) && (Integer.valueOf(selectedStudentGrade) <= 100)){
+                        String insertQuery = "insert into notes (user_id, course_id, year, grade) values('"+selectedUserId+"','"+selectedCourse+"','"+year+"','"+alph+"')";
+                        connection.statement.executeUpdate(insertQuery);
+
+                        conn connection2 = new conn();
+                        int success = 0;
+                        if(!alph.equals("F"))
+                            success = 1;
+                        String insertQuery2 = "insert into takes (student_id,course_id,success) values('"+selectedUserId+"','"+selectedCourse+"','"+success+"')";
+                        connection2.statement.executeUpdate(insertQuery2);
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null,"Grades must between 0 - 100");
+                    }
+                    alph = "";
                 }
+                JOptionPane.showMessageDialog(null,"Grades are entered successfully");
+                this.setVisible(false);
             }catch (Exception ex){
                 ex.printStackTrace();
+                if(String.valueOf(ex).startsWith("java.sql.SQLIntegrityConstraintViolationException: Duplicate entry")){
+                    JOptionPane.showMessageDialog(null,"You have already entered grades");
+                }
             }
         }
     }

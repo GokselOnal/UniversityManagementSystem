@@ -12,8 +12,8 @@ import java.util.Calendar;
 import java.util.Vector;
 
 public class CourseRegistration extends JFrame implements ActionListener {
-    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-04-11";
-    static String registrationDateFall = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-09-01";
+    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-07-22";
+    static String registrationDateFall = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-07-22";
     JTable table;
     JScrollPane sp;
     String x[] = {"Course Id","Teacher","Title","Credit","Semester","Year","Day","Start Time","Duration","Prerequisite","Quota","Department"};
@@ -214,6 +214,7 @@ public class CourseRegistration extends JFrame implements ActionListener {
                     String decCredit = "update user set credit ="+newCredit+" where uid = '"+user_id+"'";
                     connection2.statement.executeUpdate(decCredit);
                     JOptionPane.showMessageDialog(null,"aldın");
+                    this.setVisible(false);
                     this.remove(sp);
                     createTable("select * from course",getCourseCount());
                 }
