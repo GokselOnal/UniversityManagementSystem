@@ -92,6 +92,7 @@ public class CourseDetails extends JFrame implements ActionListener {
 
         createTable("select * from course",getCourseCount());
 
+        table.setEnabled(false);
         this.getContentPane().setBackground(new Color(255,140,0));
         this.add(label_year);
         this.add(combo_year);
@@ -116,6 +117,7 @@ public class CourseDetails extends JFrame implements ActionListener {
                 conn connection = new conn();
                 ResultSet rs = connection.statement.executeQuery("select count(cid) as count from course where year = '"+year+"' and  semester = '"+semester+"' and credit = '"+credit+"' and department_id = '"+department+"'");
                 rs.next();
+                this.remove(sp);
                 int searchCount = rs.getInt("count");
                 createTable("select * from course where year = '"+year+"' and  semester = '"+semester+"' and credit = '"+credit+"' and department_id = '"+department+"'",searchCount);
             }catch (Exception ee){
@@ -145,7 +147,7 @@ public class CourseDetails extends JFrame implements ActionListener {
                 y[i][j++] = rs.getString("title");
                 y[i][j++] = rs.getString("credit");
                 y[i][j++] = rs.getString("semester");
-                y[i][j++] = rs.getString("year");
+                y[i][j++] = rs.getString("year").substring(0,4);
                 y[i][j++] = rs.getString("day");
                 y[i][j++] = rs.getString("start_time");
                 y[i][j++] = rs.getString("duration");

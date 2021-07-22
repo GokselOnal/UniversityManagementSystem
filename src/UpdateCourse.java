@@ -126,9 +126,13 @@ public class UpdateCourse extends JFrame implements ActionListener {
                 createTable("select * from course",getCourseCount());
             }catch (Exception ee){
                 ee.printStackTrace();
+                if(String.valueOf(ee).startsWith("java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16")){
+                    JOptionPane.showMessageDialog(null,"Select a row for update please");
+                }
             }
         }
     }
+
 
     public void createTable(String query, int number){
         try{

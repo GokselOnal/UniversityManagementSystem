@@ -27,6 +27,7 @@ public class ProgramDetails extends JFrame {
             }
             table = new JTable(y,x);
             table.setGridColor(Color.orange);
+            table.setEnabled(false);
 
         }catch (Exception ee){
             ee.printStackTrace();

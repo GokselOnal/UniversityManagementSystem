@@ -73,7 +73,7 @@ public class StudentDetails extends JFrame implements ActionListener{
         search.setForeground(Color.BLACK);
         search.setFocusable(false);
 
-        createTable("select * from user where type = 1",getStudentCount());
+        createTable("select * from user where type = 1 and department_id is not null",getStudentCount());
 
         table.setEnabled(false);
         this.setResizable(false);
@@ -91,7 +91,7 @@ public class StudentDetails extends JFrame implements ActionListener{
         int studentCount = 0;
         try{
             conn connection = new conn();
-            String selectQuery = "select count(uid) as count from user where type = 1";
+            String selectQuery = "select count(uid) as count from user where type = 1 and department_id is not null";
             ResultSet rs= connection.statement.executeQuery(selectQuery);
             rs.next();
             studentCount += rs.getInt("count");
@@ -182,7 +182,7 @@ public class StudentDetails extends JFrame implements ActionListener{
                     createTable("select * from user where type = 1 and department_id = '"+didCombo+"'",getSearchNoneLevCount());
                 }
                 else{
-                    createTable("select * from user where type = 1",getStudentCount());
+                    createTable("select * from user where type = 1 and department_id is not null",getStudentCount());
                 }
             }
             catch (Exception ee){
@@ -218,10 +218,11 @@ public class StudentDetails extends JFrame implements ActionListener{
 
                 conn connection3 = new conn();
                 String department_id = rs.getString("department_id");
-                String selectQueryDep = "select * from department where did= '"+department_id+"'";
+                String selectQueryDep = "select * from department where did = '"+department_id+"'";
                 ResultSet rsDep = connection3.statement.executeQuery(selectQueryDep);
                 rsDep.next();
                 String department_name = rsDep.getString("department_name");
+
                 y[i][j++] = department_name;
 
                 i++;

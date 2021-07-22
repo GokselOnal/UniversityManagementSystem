@@ -63,14 +63,24 @@ public class TeacherPage extends JFrame implements ActionListener {
         this.add(mySchedule);
         this.add(academicInformation);
         this.add(label);
-        this.setResizable(false);
         this.setVisible(true);
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if(e.getSource() == courseOffered){
+            new CourseOffered();
+        }
+        else if(e.getSource() == mySchedule){
+            new MyScheduleTeacher();
+        }
+        else if(e.getSource() == examination){
+            new Exams();
+        }
+        else if(e.getSource() == academicInformation){
+            new AcademicInformationTeacher();
+        }
     }
 
     public static void main(String[] args) {

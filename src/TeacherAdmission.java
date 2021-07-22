@@ -141,7 +141,6 @@ public class TeacherAdmission extends JFrame implements ActionListener {
         cancel.setForeground(Color.BLACK);
         cancel.addActionListener(this);
 
-
         teacherAddimage.add(title);
         teacherAddimage.add(name);
         teacherAddimage.add(age);
@@ -189,15 +188,15 @@ public class TeacherAdmission extends JFrame implements ActionListener {
 
                 rs.next();
                 String department_id = rs.getString("did");
-                int department_idInt = Integer.parseInt(department_id);
 
-                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+department_idInt+",'2')";
+                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"','"+department_id+"','2')";
                 connection.statement.executeUpdate(query);
 
                 JOptionPane.showMessageDialog(null, "Teacher has been added successfully");
                 makeTextFieldEmpty();
             }
             catch (Exception ee){
+                ee.printStackTrace();
                 if((String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:")) || String.valueOf(ee).startsWith("java.sql.SQLException: Data truncated")){
                     JOptionPane.showMessageDialog(null, "Please enter only integer values on age field");
                     makeTextFieldEmpty();

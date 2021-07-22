@@ -24,42 +24,49 @@ public class ManagerPage extends JFrame implements ActionListener {
         JMenuItem m1 = new JMenuItem("New Program");
         JMenuItem m2 = new JMenuItem("New Student Admission");
         JMenuItem m3 = new JMenuItem("New Teacher Admission");
+        JMenuItem m4 = new JMenuItem("New Course");
         master.setForeground(new Color(255,140,0));
         m1.addActionListener(this);
         m2.addActionListener(this);
         m3.addActionListener(this);
+        m4.addActionListener(this);
 
         master.add(m1);
         master.add(m2);
         master.add(m3);
-
+        master.add(m4);
 
         JMenu details = new JMenu("Details");
         JMenuItem d1 = new JMenuItem("Program Details");
         JMenuItem d2 = new JMenuItem("Student Details");
         JMenuItem d3 = new JMenuItem("Teacher Details");
+        JMenuItem d4 = new JMenuItem("Course Details");
         details.setForeground(new Color(116,96,96));
         d1.addActionListener(this);
         d2.addActionListener(this);
         d3.addActionListener(this);
+        d4.addActionListener(this);
 
         details.add(d1);
         details.add(d2);
         details.add(d3);
-
+        details.add(d4);
 
         JMenu updateDetails = new JMenu("Update Details");
         JMenuItem ud1 = new JMenuItem("Update Program");
         JMenuItem ud2 = new JMenuItem("Update Student");
         JMenuItem ud3 = new JMenuItem("Update Teacher");
+        JMenuItem ud4 = new JMenuItem("Update Course");
         updateDetails.setForeground(new Color(255,140,0));
         ud1.addActionListener(this);
         ud2.addActionListener(this);
         ud3.addActionListener(this);
+        ud4.addActionListener(this);
 
         updateDetails.add(ud1);
         updateDetails.add(ud2);
         updateDetails.add(ud3);
+        updateDetails.add(ud4);
 
         JMenu exit = new JMenu("Exit");
         JMenuItem ext = new JMenuItem("Exit");
@@ -91,6 +98,9 @@ public class ManagerPage extends JFrame implements ActionListener {
         else if(msg.equals("New Program")){
             new NewProgram().setVisible(true);
         }
+        else if(msg.equals("New Course")){
+            new NewCourse().setVisible(true);
+        }
         else if(msg.equals("Student Details")){
             new StudentDetails().setVisible(true);
         }
@@ -100,6 +110,9 @@ public class ManagerPage extends JFrame implements ActionListener {
         else if(msg.equals("Program Details")){
             new ProgramDetails().setVisible(true);
         }
+        else if(msg.equals("Course Details")){
+            new CourseDetails().setVisible(true);
+        }
         else if(msg.equals("Update Program")){
             new UpdateProgram().setVisible(true);
         }
@@ -108,6 +121,9 @@ public class ManagerPage extends JFrame implements ActionListener {
         }
         else if(msg.equals("Update Teacher")){
             new UpdateTeacher().setVisible(true);
+        }
+        else if(msg.equals("Update Course")){
+            new UpdateCourse().setVisible(true);
         }
         else if(msg.equals("Exit")){
             System.exit(0);

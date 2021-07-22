@@ -7,8 +7,10 @@ public class NewProgram extends JFrame implements ActionListener {
     JLabel title;
     JLabel facultyAddImage;
     JLabel department_name;
+    JLabel department_id;
 
     JTextField text_dept_name;
+    JTextField text_dept_id;
 
     JButton submit;
     JButton cancel;
@@ -32,12 +34,19 @@ public class NewProgram extends JFrame implements ActionListener {
         title.setFont(new Font(",Courier",Font.ITALIC,25));
         title.setForeground(Color.black);
 
-        department_name = new JLabel("Department");
-        department_name.setBounds(300,320,150,30);
+        department_id = new JLabel("Department Id");
+        department_id.setBounds(150,320,150,30);
+        department_id.setFont(new Font("serif",Font.BOLD,15));
+
+        text_dept_id = new JTextField();
+        text_dept_id.setBounds(260,320,150,30);
+
+        department_name = new JLabel("Department Name");
+        department_name.setBounds(450,320,150,30);
         department_name.setFont(new Font("serif",Font.BOLD,15));
 
         text_dept_name = new JTextField();
-        text_dept_name.setBounds(400,320,150,30);
+        text_dept_name.setBounds(580,320,150,30);
 
         submit = new JButton("Submit");
         submit.setBounds(250,430,150,40);
@@ -54,6 +63,8 @@ public class NewProgram extends JFrame implements ActionListener {
         cancel.addActionListener(this);
 
         facultyAddImage.add(title);
+        facultyAddImage.add(department_id);
+        facultyAddImage.add(text_dept_id);
         facultyAddImage.add(department_name);
         facultyAddImage.add(text_dept_name);
         facultyAddImage.add(submit);
@@ -66,21 +77,27 @@ public class NewProgram extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String dept_name;
+        String dept_id,dept_name;
         if (e.getSource() == submit) {
-
+            dept_id = text_dept_id.getText();
             dept_name = text_dept_name.getText();
 
             try {
                 conn connection = new conn();
-                String insertQuery = "insert into department(department_name) values ('" + dept_name + "')";
+                String insertQuery = "insert into department(did,department_name) values ('"+dept_id+"','"+ dept_name + "')";
                 connection.statement.executeUpdate(insertQuery);
                 JOptionPane.showMessageDialog(null,"Department has been added successfully");
                 text_dept_name.setText("");
+                text_dept_id.setText("");
             } catch (Exception ee) {
-                ee.printStackTrace();
                 if(String.valueOf(ee).startsWith("java.sql.SQLIntegrityConstraintViolationException: Duplicate entry")){
                     JOptionPane.showMessageDialog(null, "Please enter a new department\nIt is already exists");
+                    text_dept_id.setText("");
+                    text_dept_name.setText("");
+                }
+                else if(String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long")){
+                    JOptionPane.showMessageDialog(null, "Please enter a 2 digit new department Id");
+                    text_dept_id.setText("");
                     text_dept_name.setText("");
                 }
             }
@@ -91,6 +108,6 @@ public class NewProgram extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        new NewProgram();
+        new NewProgram().setVisible(true);
     }
 }

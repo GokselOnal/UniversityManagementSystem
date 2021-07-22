@@ -194,7 +194,6 @@ public class StudentAdmission extends JFrame implements ActionListener {
             level = (String)combo_level.getSelectedItem();
             program = (String)combo_program.getSelectedItem();
 
-
             try{
                 conn connection = new conn();
 
@@ -210,15 +209,15 @@ public class StudentAdmission extends JFrame implements ActionListener {
 
                 rs2.next();
                 String department_id = rs2.getString("did");
-                int department_idInt = Integer.parseInt(department_id);
 
-                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,level_id,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+level_idInt+","+department_idInt+",'1')";
+                String query = "insert into user(name,password,age,e_mail,address,phone,birthdate,level_id,department_id,type) values ('"+name+"','"+password+"','"+age+"','"+e_mail+"','"+address+"','"+phone+"','"+dob+"',"+level_idInt+",'"+department_id+"','1')";
                 connection.statement.executeUpdate(query);
 
                 JOptionPane.showMessageDialog(null, "Student has been added successfully");
                 makeTextFieldEmpty();
             }
             catch (Exception ee){
+                ee.printStackTrace();
                 if((String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:")) || String.valueOf(ee).startsWith("java.sql.SQLException: Data truncated")){
                     JOptionPane.showMessageDialog(null, "Please enter only integer values on age field");
                     makeTextFieldEmpty();

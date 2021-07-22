@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 
 public class StudentPage extends JFrame implements ActionListener {
     JButton courseOffered;
@@ -61,23 +62,24 @@ public class StudentPage extends JFrame implements ActionListener {
         this.add(mySchedule);
         this.add(academicInformation);
         this.add(label);
-        this.setResizable(false);
         this.setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == courseOffered){
-            this.setVisible(false);
-            //open page
+            new CourseOffered();
         }
         if(e.getSource() == courseRegistration){
-            this.setVisible(false);
-            //open page
+            LocalDate date = LocalDate.now();
+            if((String.valueOf(date).equals(CourseRegistration.registrationDateSpring) || String.valueOf(date).equals(CourseRegistration.registrationDateFall))){
+                new CourseRegistration();
+            }else{
+                JOptionPane.showMessageDialog(null,"Course registration system is currently inactive");
+            }
         }
         if(e.getSource() == mySchedule){
-            this.setVisible(false);
-            //open page
+            new MySchedule();
         }
         if(e.getSource() == academicInformation){
             this.setVisible(false);

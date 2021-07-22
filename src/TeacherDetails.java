@@ -51,7 +51,7 @@ public class TeacherDetails extends JFrame implements ActionListener{
         search.setForeground(Color.BLACK);
         search.setFocusable(false);
 
-        createTable("select * from user where type = 2",getTeacherCount());
+        createTable("select * from user where type = 2 and department_id is not null",getTeacherCount());
 
         table.setEnabled(false);
         this.getContentPane().setBackground(new Color(255,140,0));
@@ -79,7 +79,7 @@ public class TeacherDetails extends JFrame implements ActionListener{
                     this.remove(sp);
                     createTable("select * from user where type = 2 and department_id = '" + didCombo + "'", getSearchDepCount());
                 }else{
-                    createTable("select * from user where type = 2",getTeacherCount());
+                    createTable("select * from user where type = 2 and department_id is not null",getTeacherCount());
                 }
             }
             catch (Exception ee){
@@ -92,7 +92,7 @@ public class TeacherDetails extends JFrame implements ActionListener{
         int teacherCount = 0;
         try{
             conn connection = new conn();
-            String selectQuery = "select count(uid) as count from user where type = 2";
+            String selectQuery = "select count(uid) as count from user where type = 2 and department_id is not null";
             ResultSet rs= connection.statement.executeQuery(selectQuery);
             rs.next();
             teacherCount += rs.getInt("count");

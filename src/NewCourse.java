@@ -223,7 +223,7 @@ public class NewCourse extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == submit) {
-            String course_id = text_courseId.getText();//6 digit max
+            String course_id = text_courseId.getText();
             String teacher_name = (String) combo_teacher.getSelectedItem();
             String title = text_title.getText();
             String credit = (String) combo_credit.getSelectedItem();
@@ -234,6 +234,7 @@ public class NewCourse extends JFrame implements ActionListener {
             String duration = (String) combo_duration.getSelectedItem();
             String department_id = (String) combo_department.getSelectedItem();
 
+            //AYNI HOCAYA, AYNI SAATLER ARALIGINDA BASKA DERS EKLENEMEZ
             try {
                 conn connection = new conn();
                 String query = "select * from user where name = '"+teacher_name+"'";
@@ -242,22 +243,29 @@ public class NewCourse extends JFrame implements ActionListener {
                 String teacher_id = rs.getString("uid");
                 String insertQuery = "insert into course(cid, teacher, title, credit, semester, year, day, start_time, duration, department_id) values('"+course_id+"','"+teacher_id+"','"+title+"','"+credit+"','"+semester+"','"+year+"','"+day+"','"+start_time+"','"+duration+"','"+department_id+"')";
                 connection.statement.executeUpdate(insertQuery);
+                JOptionPane.showMessageDialog(null, "Course have been added successfully");
+                text_courseId.setText("");
+                text_year.setText("");
+                text_title.setText("");
             } catch (Exception ee) {
                 ee.printStackTrace();
                 if((String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column"))){
                     JOptionPane.showMessageDialog(null, "Please enter max 6 digit id on course id");
                     text_courseId.setText("");
                     text_year.setText("");
+                    text_title.setText("");
                 }
                 else if(String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Incorrect date value:") || String.valueOf(ee).startsWith("java.sql.SQLException: Incorrect integer value:") || String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Out of range")){
                     JOptionPane.showMessageDialog(null, "Please enter year correctly (yyyy)");
                     text_courseId.setText("");
                     text_year.setText("");
+                    text_title.setText("");
                 }
                 else if(String.valueOf(ee).startsWith("java.sql.SQLIntegrityConstraintViolationException: Duplicate entry")){
                     JOptionPane.showMessageDialog(null, "Please enter a new course\n The Course Id is already exists");
                     text_courseId.setText("");
                     text_year.setText("");
+                    text_title.setText("");
                 }
             }
         }

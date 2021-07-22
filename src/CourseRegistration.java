@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Vector;
 
 public class CourseRegistration extends JFrame implements ActionListener {
-    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-02-23";
+    static String registrationDateSpring = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-04-11";
     static String registrationDateFall = String.valueOf(Calendar.getInstance().get(Calendar.YEAR))+"-09-01";
     JTable table;
     JScrollPane sp;
@@ -202,6 +202,7 @@ public class CourseRegistration extends JFrame implements ActionListener {
                     history.add(rs3.getString("course_id"));
                 }
                 //dersi almış olması değil, basarıyla geçmiş olma durumuna göre bakmayı unutma!!!
+                //o anda oldukları dönemdeki derslerden alabilmeli(course registrationı course offereddan fakrlı yap)
                 if((selectedPrerequisite == null || history.contains(selectedPrerequisite)) && (selectedQuota > 0) && currentCredit > 0) {
                     for (int i = 0; i < Integer.parseInt(selectedDuration); i++) {
                         String insertQuery = "insert into schedule(user_id,course_id,year,dayIndex,timeIndex) values('" + user_id +"','"+selectedCourseId+"','"+year+"','" + selectedDayIndex + "','" + (selectedTimeIndex + i) + "')";

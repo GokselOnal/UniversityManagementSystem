@@ -10,6 +10,8 @@ public class Login extends JFrame implements ActionListener {
     JTextField textField1;
     JPasswordField textField2;
     JButton button1,button2;
+    static String Username;
+
 
     Login(){
         this.setTitle("Login");
@@ -84,10 +86,12 @@ public class Login extends JFrame implements ActionListener {
                     if(user_type.equals("1")) {
                         this.setVisible(false);
                         new StudentPage().setVisible(true);
+                        Username = name;
                     }
                     else if(user_type.equals("2")){
                         this.setVisible(false);
                         new TeacherPage().setVisible(true);
+                        Username = name;
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid login");
