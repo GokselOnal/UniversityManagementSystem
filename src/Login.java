@@ -85,13 +85,13 @@ public class Login extends JFrame implements ActionListener {
                     String user_type = rs.getString("type");
                     if(user_type.equals("1")) {
                         this.setVisible(false);
-                        new StudentPage().setVisible(true);
                         Username = name;
+                        new StudentPage().setVisible(true);
                     }
                     else if(user_type.equals("2")){
                         this.setVisible(false);
-                        new TeacherPage().setVisible(true);
                         Username = name;
+                        new TeacherPage().setVisible(true);
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid login");

@@ -7,9 +7,8 @@ public class TeacherPage extends JFrame implements ActionListener {
     JButton courseOffered;
     JButton examination;
     JButton mySchedule;
-    JButton academicInformation; //akran danısmanlıgı yaparsın
-
-    //examination -> details and enter marks
+    JButton academicInformation;
+    JButton name;
 
     TeacherPage(){
         this.setTitle("Teacher Page");
@@ -24,6 +23,16 @@ public class TeacherPage extends JFrame implements ActionListener {
         JLabel label = new JLabel(icc3);
         label.setBounds(0,150,1925,880);
 
+
+        String userName = Login.Username;
+        System.out.println(userName);
+
+        name = new JButton(userName);
+        name.setBounds(35,50,130,60);
+        name.setFocusable(false);
+        name.setFont(new Font("SansSerif",Font.BOLD,17));
+        name.setBackground(Color.white);
+        name.setForeground(Color.BLACK);
 
         courseOffered = new JButton("Course Offered");
         courseOffered.setBounds(260,50,205,130);
@@ -62,6 +71,7 @@ public class TeacherPage extends JFrame implements ActionListener {
         this.add(examination);
         this.add(mySchedule);
         this.add(academicInformation);
+        this.add(name);
         this.add(label);
         this.setVisible(true);
     }

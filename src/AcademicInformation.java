@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 
 public class AcademicInformation extends JFrame implements ActionListener {
-    //ortalama,transkript(harf notları)
     JLabel gpa, gpaRes, status, statusRes;
     JButton transcript;
 
@@ -44,7 +43,7 @@ public class AcademicInformation extends JFrame implements ActionListener {
         gpaRes.setForeground(Color.black);
 
         transcript = new JButton("View transcript");
-        transcript.setBounds(30,180,160,40);
+        transcript.setBounds(290,180,160,40);
         transcript.setFont(new Font("serif",Font.BOLD,15));
         transcript.setBackground(Color.white);
         transcript.setFocusable(false);
@@ -87,6 +86,7 @@ public class AcademicInformation extends JFrame implements ActionListener {
     }
     public double calculateGPA(){
         String userName = Login.Username;
+        System.out.println(userName);
         double gpa = 0.0;
         try{
             conn connection = new conn();

@@ -9,6 +9,7 @@ public class StudentPage extends JFrame implements ActionListener {
     JButton courseRegistration;
     JButton mySchedule;
     JButton academicInformation;
+    JButton name;
 
     StudentPage(){
         this.setTitle("Student Page");
@@ -22,6 +23,16 @@ public class StudentPage extends JFrame implements ActionListener {
         ImageIcon icc3 = new ImageIcon(i3);
         JLabel label = new JLabel(icc3);
         label.setBounds(0,150,1925,880);
+
+        String userName = Login.Username;
+        System.out.println(userName);
+
+        name = new JButton(userName);
+        name.setBounds(35,50,130,60);
+        name.setFocusable(false);
+        name.setFont(new Font("SansSerif",Font.BOLD,17));
+        name.setBackground(Color.white);
+        name.setForeground(Color.BLACK);
 
 
         courseOffered = new JButton("Course Offered");
@@ -57,6 +68,7 @@ public class StudentPage extends JFrame implements ActionListener {
         academicInformation.addActionListener(this);
 
         this.getContentPane().setBackground(Color.white);
+        this.add(name);
         this.add(courseOffered);
         this.add(courseRegistration);
         this.add(mySchedule);
