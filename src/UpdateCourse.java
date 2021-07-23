@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UpdateCourse extends JFrame implements ActionListener {
@@ -83,7 +84,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
                 }
             }
         }
-        // o gündeki o saatlerde başka bir kurs varsa?
         else if(e.getSource() == changeDay) {
             boolean valid = false;
             boolean valid2 = false;
@@ -223,14 +223,30 @@ public class UpdateCourse extends JFrame implements ActionListener {
             }
         }
         else if(e.getSource() == changeTime){
+            String selectedCourseId = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+            String newTime = (String) table.getModel().getValueAt(table.getSelectedRow(), 7);
             try {
-                String selectedCourseId = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
-                String newTime = (String) table.getModel().getValueAt(table.getSelectedRow(), 7);
                 if(newTime.equals("08:40:00") || newTime.equals("09:40:00") || newTime.equals("10:40:00") || newTime.equals("11:40:00") || newTime.equals("12:40:00") || newTime.equals("13:40:00") || newTime.equals("14:40:00") || newTime.equals("15:40:00") || newTime.equals("16:40:00") || newTime.equals("17:40:00") || newTime.equals("18:40:00")){
-                    conn connection = new conn();
-                    String updateQuery = "update course set start_time = '" + newTime + "' where cid = '" + selectedCourseId + "'";
-                    connection.statement.executeUpdate(updateQuery);
-                    JOptionPane.showMessageDialog(null, "Start time has been updated successfully");
+                    conn connection2 = new conn();
+                    String selectQuery = "select day,start_time, duration from course where cid = '"+ selectedCourseId +"'";
+                    ResultSet rs2 = connection2.statement.executeQuery(selectQuery);
+                    rs2.next();
+
+                    //String durationSelected = rs2.getString("duration");
+                    String daySelected = rs2.getString("day");
+
+                    conn connection3 = new conn();
+                    String selectQuery3 = "select cid,duration from course where day = '"+daySelected+"' and start_time = '"+ newTime +"'";
+                    ResultSet rs3 = connection3.statement.executeQuery(selectQuery3);
+                    rs3.next();
+                    if(rs3.getString("cid").isEmpty()){
+                        /*conn connection = new conn();
+                        String updateQuery = "update course set start_time = '" + newTime + "' where cid = '" + selectedCourseId + "'";
+                        connection.statement.executeUpdate(updateQuery);
+                        JOptionPane.showMessageDialog(null, "Start time has been updated successfully");*/
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Given time is not available");
+                    }
                 }
                 else{
                     JOptionPane.showMessageDialog(null, "Write a hour(hh:mm:ss) please");
@@ -238,7 +254,18 @@ public class UpdateCourse extends JFrame implements ActionListener {
 
             }catch (Exception ee){
                 ee.printStackTrace();
-                if(String.valueOf(ee).startsWith("java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16")){
+                if(String.valueOf(ee).startsWith("java.sql.SQLException: Illegal operation on empty result set")){
+                    //JOptionPane.showMessageDialog(null, "Given time is not available");
+                    conn connection = new conn();
+                    String updateQuery = "update course set start_time = '" + newTime + "' where cid = '" + selectedCourseId + "'";
+                    try {
+                        connection.statement.executeUpdate(updateQuery);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    JOptionPane.showMessageDialog(null, "Start time has been updated successfully");
+                }
+                else if(String.valueOf(ee).startsWith("java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16")){
                     JOptionPane.showMessageDialog(null,"Select a row for update please");
                 }
             }
