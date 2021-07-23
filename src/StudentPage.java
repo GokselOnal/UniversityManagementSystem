@@ -82,8 +82,7 @@ public class StudentPage extends JFrame implements ActionListener {
             new MySchedule();
         }
         if(e.getSource() == academicInformation){
-            this.setVisible(false);
-            //open page
+            new AcademicInformation();
         }
     }
 
