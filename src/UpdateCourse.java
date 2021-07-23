@@ -83,15 +83,134 @@ public class UpdateCourse extends JFrame implements ActionListener {
                 }
             }
         }
+        // o gündeki o saatlerde başka bir kurs varsa?
         else if(e.getSource() == changeDay) {
+            boolean valid = false;
+            boolean valid2 = false;
             try {
                 String selectedCourseId = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
                 String newDay = (String) table.getModel().getValueAt(table.getSelectedRow(), 6);
                 if(newDay.equals("Monday") || newDay.equals("Tuesday") || newDay.equals("Wednesday") || newDay.equals("Thursday") || newDay.equals("Friday")) {
-                    conn connection = new conn();
-                    String updateQuery = "update course set day = '" + newDay + "' where cid = '" + selectedCourseId + "'";
-                    connection.statement.executeUpdate(updateQuery);
-                    JOptionPane.showMessageDialog(null, "Day has been updated successfully");
+                    conn connection2 = new conn();
+                    String selectQuery2 = "select teacher from course where cid ='" + selectedCourseId +"'";
+                    ResultSet rs2 = connection2.statement.executeQuery(selectQuery2);
+                    rs2.next();
+                    String selectedCourseTeacherUid = rs2.getString("teacher");
+
+                    conn connection3 = new conn();
+                    String selectQuery3 = "select cid from course where teacher = '"+ selectedCourseTeacherUid +"'";
+                    ResultSet rs3 = connection3.statement.executeQuery(selectQuery3);
+                    while(rs3.next()){
+                        String teacherCourse = rs3.getString("cid");
+                        //System.out.println("Teacher course: " + teacherCourse);
+                        conn connection4 = new conn();
+                        String selectQuery4 = "select day,start_time, duration from course where cid = '"+ teacherCourse +"'";
+                        ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
+                        rs4.next();
+                        String day = rs4.getString("day");
+                        String start_time = rs4.getString("start_time");
+                        String duration = rs4.getString("duration");
+                        //System.out.println("Teachers ->>" + day +" " + start_time+ " " + duration);
+
+                        conn connection5 = new conn();
+                        String selectQuery5 = "select day,start_time, duration from course where cid = '"+ selectedCourseId +"'";
+                        ResultSet rs5 = connection5.statement.executeQuery(selectQuery5);
+                        rs5.next();
+                        String daySelected = rs5.getString("day");
+                        String start_timeSelected = rs5.getString("start_time");
+                        String durationSelected = rs5.getString("duration");
+                        //System.out.println("Selected ->>" + daySelected+" " + start_timeSelected+ " " + durationSelected);
+
+
+                        if(daySelected.equals(day) && !selectedCourseId.equals(teacherCourse)){
+                            ArrayList<String> timePeriod = new ArrayList<String>();
+                            for(int i = 0; i < Integer.valueOf(durationSelected); i++){
+                                timePeriod.add(start_timeSelected);
+                            }
+                            for(int i = 0; i < Integer.valueOf(durationSelected); i++){
+                                timePeriod.get(i).replace(timePeriod.get(i).charAt(1), ((char)Integer.parseInt(String.valueOf(timePeriod.get(i).charAt(1)) + 1)));
+                            }
+                            ArrayList<String> timePeriodOld = new ArrayList<String>();
+                            for(int i = 0; i < Integer.valueOf(duration); i++){
+                                timePeriodOld.add(start_time);
+                            }
+                            for(int i = 0; i < Integer.valueOf(duration); i++){
+                                timePeriodOld.get(i).replace(timePeriodOld.get(i).charAt(1), ((char)Integer.parseInt(String.valueOf(timePeriodOld.get(i).charAt(1)) + 1)));
+                            }
+
+                            for(int i = 0; i < Integer.valueOf(duration); i++){
+                                if(timePeriod.contains(timePeriodOld.get(i))){
+                                    valid = false;
+                                }else{
+                                    valid = true;
+                                }
+                            }
+                        }else{
+                            valid = true;
+                        }
+                    }
+                    //başka bir dersle çakışıyor mu
+                    conn connection6 = new conn();
+                    String selectQuery6 = "select cid from course where day = '"+ newDay +"'";
+                    ResultSet rs6 = connection6.statement.executeQuery(selectQuery6);
+                    rs6.next();
+                    while(rs6.next()){
+                        String courseGivenDay = rs6.getString("cid");
+
+                        conn connection7 = new conn();
+                        String selectQuery7 = "select day,start_time, duration from course where cid = '"+ courseGivenDay +"'";
+                        ResultSet rs7 = connection7.statement.executeQuery(selectQuery7);
+                        rs7.next();
+                        String dayGivenDay = rs7.getString("day");
+                        String start_timeGivenDay = rs7.getString("start_time");
+                        String durationGivenDay = rs7.getString("duration");
+
+                        conn connection8 = new conn();
+                        String selectQuery8 = "select day,start_time, duration from course where cid = '"+ selectedCourseId +"'";
+                        ResultSet rs8 = connection8.statement.executeQuery(selectQuery8);
+                        rs8.next();
+                        String daySelected = rs8.getString("day");
+                        String start_timeSelected = rs8.getString("start_time");
+                        String durationSelected = rs8.getString("duration");
+
+                        if(daySelected.equals(dayGivenDay)){
+                            ArrayList<String> timePeriod = new ArrayList<String>();
+                            for(int i = 0; i < Integer.valueOf(durationSelected); i++){
+                                timePeriod.add(start_timeSelected);
+                            }
+                            for(int i = 0; i < Integer.valueOf(durationSelected); i++){
+                                timePeriod.get(i).replace(timePeriod.get(i).charAt(1), ((char)Integer.parseInt(String.valueOf(timePeriod.get(i).charAt(1)) + 1)));
+                            }
+                            ArrayList<String> timePeriodOld = new ArrayList<String>();
+                            for(int i = 0; i < Integer.valueOf(durationGivenDay); i++){
+                                timePeriodOld.add(start_timeGivenDay);
+                            }
+                            for(int i = 0; i < Integer.valueOf(durationGivenDay); i++){
+                                timePeriodOld.get(i).replace(timePeriodOld.get(i).charAt(1), ((char)Integer.parseInt(String.valueOf(timePeriodOld.get(i).charAt(1)) + 1)));
+                            }
+
+                            for(int i = 0; i < Integer.valueOf(durationGivenDay); i++){
+                                if(timePeriod.contains(timePeriodOld.get(i))){
+                                    valid2 = false;
+                                }else{
+                                    valid2 = true;
+                                }
+                            }
+                        }else{
+                            valid2 = true;
+                        }
+
+                    }
+                    if(valid == true && valid2 == true){
+                        conn connection = new conn();
+                        String updateQuery = "update course set day = '" + newDay + "' where cid = '" + selectedCourseId + "'";
+                        connection.statement.executeUpdate(updateQuery);
+                        JOptionPane.showMessageDialog(null, "Day has been updated successfully");
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Time period is not available for course's teacher");
+                        return;
+                    }
+
                 }
                 else{
                     JOptionPane.showMessageDialog(null,"Write a proper weekday please");
@@ -183,14 +302,14 @@ public class UpdateCourse extends JFrame implements ActionListener {
                                     timePeriod.add(srtTimeSelected);
                                 }
                                 for(int i = 0; i < Integer.valueOf(durSelected); i++){
-                                    timePeriod.get(i).replace(srtTime.charAt(1), ((char)Integer.parseInt(String.valueOf(srtTime.charAt(1)) + 1)));
+                                    timePeriod.get(i).replace(timePeriod.get(i).charAt(1), ((char)Integer.parseInt(String.valueOf(timePeriod.get(i).charAt(1)) + 1)));
                                 }
                                 ArrayList<String> timePeriodOld = new ArrayList<String>();
                                 for(int i = 0; i < Integer.valueOf(dur); i++){
                                     timePeriodOld.add(srtTime);
                                 }
                                 for(int i = 0; i < Integer.valueOf(dur); i++){
-                                    timePeriodOld.get(i).replace(srtTime.charAt(1), ((char)Integer.parseInt(String.valueOf(srtTime.charAt(1)) + 1)));
+                                    timePeriodOld.get(i).replace(timePeriodOld.get(i).charAt(1), ((char)Integer.parseInt(String.valueOf(timePeriodOld.get(i).charAt(1)) + 1)));
                                 }
 
                                 for(int i = 0; i < Integer.valueOf(dur); i++){
@@ -211,6 +330,7 @@ public class UpdateCourse extends JFrame implements ActionListener {
                             return;
                         }else if(valid == false && k != getTeacherCount()){
                             JOptionPane.showMessageDialog(null, "Time period is not available for given teacher");
+                            return;
                         }
                     }
                     k++;
