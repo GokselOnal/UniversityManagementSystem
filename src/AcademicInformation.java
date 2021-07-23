@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 
-public class AcademicInformation extends JFrame {
+public class AcademicInformation extends JFrame implements ActionListener {
     //ortalama,transkript(harf notları)
     JLabel gpa, gpaRes, status, statusRes;
+    JButton transcript;
 
     AcademicInformation(){
         this.setTitle("Academic Information");
@@ -40,10 +43,18 @@ public class AcademicInformation extends JFrame {
         gpaRes.setFont(new Font(",Courier",Font.CENTER_BASELINE,25));
         gpaRes.setForeground(Color.black);
 
+        transcript = new JButton("View transcript");
+        transcript.setBounds(30,180,160,40);
+        transcript.setFont(new Font("serif",Font.BOLD,15));
+        transcript.setBackground(Color.white);
+        transcript.setFocusable(false);
+        transcript.addActionListener(this);
+
         this.add(status);
         this.add(statusRes);
         this.add(gpa);
         this.add(gpaRes);
+        this.add(transcript);
         this.getContentPane().setBackground(new Color(255,140,0));
         this.setVisible(true);
     }
@@ -113,5 +124,12 @@ public class AcademicInformation extends JFrame {
 
     public static void main(String[] args) {
         new AcademicInformation().setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == transcript){
+            new Transcript();
+        }
     }
 }
