@@ -243,10 +243,11 @@ public class NewCourse extends JFrame implements ActionListener {
                 String teacher_id = rs.getString("uid");
                 String insertQuery = "insert into course(cid, teacher, title, credit, semester, year, day, start_time, duration, department_id) values('"+course_id+"','"+teacher_id+"','"+title+"','"+credit+"','"+semester+"','"+year+"','"+day+"','"+start_time+"','"+duration+"','"+department_id+"')";
                 connection.statement.executeUpdate(insertQuery);
-                JOptionPane.showMessageDialog(null, "Course have been added successfully");
+                JOptionPane.showMessageDialog(null, "Course has been added successfully");
                 text_courseId.setText("");
                 text_year.setText("");
                 text_title.setText("");
+                this.setVisible(false);
             } catch (Exception ee) {
                 ee.printStackTrace();
                 if((String.valueOf(ee).startsWith("com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column"))){

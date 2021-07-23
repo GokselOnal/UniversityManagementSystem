@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class UpdateCourse extends JFrame implements ActionListener {
 
@@ -10,7 +11,7 @@ public class UpdateCourse extends JFrame implements ActionListener {
     String x[] = {"Course Id","Teacher","Title","Credit","Semester","Year","Day","Start Time","Duration","Prerequisite","Quota","Department"};
     String y[][];
     JScrollPane sp;
-    JButton changeQuota, changeDay, changeTime, delCourse;
+    JButton changeQuota, changeDay, changeTime, delCourse, changeTeacher;
 
     UpdateCourse(){
         this.setTitle("Update Course");
@@ -49,11 +50,19 @@ public class UpdateCourse extends JFrame implements ActionListener {
         delCourse.setFocusable(false);
         delCourse.addActionListener(this);
 
+        changeTeacher = new JButton("Change Teacher");
+        changeTeacher.setBounds(1300,380,160,40);
+        changeTeacher.setFont(new Font("serif",Font.BOLD,15));
+        changeTeacher.setBackground(Color.white);
+        changeTeacher.setFocusable(false);
+        changeTeacher.addActionListener(this);
+
         this.getContentPane().setBackground(new Color(255,140,0));
         this.add(changeQuota);
         this.add(changeDay);
         this.add(changeTime);
         this.add(delCourse);
+        this.add(changeTeacher);
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -124,6 +133,95 @@ public class UpdateCourse extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null,"Course has been deleted successfully");
                 this.remove(sp);
                 createTable("select * from course",getCourseCount());
+            }catch (Exception ee){
+                ee.printStackTrace();
+                if(String.valueOf(ee).startsWith("java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16")){
+                    JOptionPane.showMessageDialog(null,"Select a row for update please");
+                }
+            }
+        }
+        else if(e.getSource() == changeTeacher){
+            try{
+                String selectedCourseId = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+                String newTeacher = (String) table.getModel().getValueAt(table.getSelectedRow(), 1);
+                boolean valid = false;
+                conn connection = new conn();
+                String selectQuery = "select name from user where type = 2";
+                ResultSet rs = connection.statement.executeQuery(selectQuery);
+                int k = 0;
+                while(rs.next()){
+                    if(rs.getString("name").equals(newTeacher)){
+                        conn connection2 = new conn();
+                        String selectQuery2 = "select uid from user where name = '" + newTeacher + "'";
+                        ResultSet rs2 = connection2.statement.executeQuery(selectQuery2);
+                        rs2.next();
+                        String uidTeacher = rs2.getString("uid");
+                        conn connection3 = new conn();
+                        String selectQuery3 = "select cid from course where teacher = '"+ uidTeacher + "'";
+                        ResultSet rs3 = connection3.statement.executeQuery(selectQuery3);
+                        while(rs3.next()){
+                            String teacherCourse = rs3.getString("cid");
+                            conn connection4 = new conn();
+                            String selectQuery4 = "select day, start_time, duration from course where cid = '"+ teacherCourse + "'";
+                            ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
+                            rs4.next();
+                            String srtTime = rs4.getString("start_time");
+                            String dur = rs4.getString("duration");
+                            String day = rs4.getString("day");
+
+                            conn connection5 = new conn();
+                            String selectQue = "select day, start_time, duration from course where cid = '" + selectedCourseId + "'";
+                            ResultSet rs5 = connection5.statement.executeQuery(selectQue);
+                            rs5.next();
+                            String srtTimeSelected = rs5.getString("start_time");
+                            String durSelected = rs5.getString("duration");
+                            String daySelected = rs5.getString("day");
+
+                            if(daySelected.equals(day)){
+                                ArrayList<String> timePeriod = new ArrayList<String>();
+                                for(int i = 0; i < Integer.valueOf(durSelected); i++){
+                                    timePeriod.add(srtTimeSelected);
+                                }
+                                for(int i = 0; i < Integer.valueOf(durSelected); i++){
+                                    timePeriod.get(i).replace(srtTime.charAt(1), ((char)Integer.parseInt(String.valueOf(srtTime.charAt(1)) + 1)));
+                                }
+                                ArrayList<String> timePeriodOld = new ArrayList<String>();
+                                for(int i = 0; i < Integer.valueOf(dur); i++){
+                                    timePeriodOld.add(srtTime);
+                                }
+                                for(int i = 0; i < Integer.valueOf(dur); i++){
+                                    timePeriodOld.get(i).replace(srtTime.charAt(1), ((char)Integer.parseInt(String.valueOf(srtTime.charAt(1)) + 1)));
+                                }
+
+                                for(int i = 0; i < Integer.valueOf(dur); i++){
+                                    if(timePeriod.contains(timePeriodOld.get(i))){
+                                        valid = false;
+                                    }else{
+                                        valid = true;
+                                    }
+                                }
+                            }else{
+                                valid = true;
+                            }
+                        }
+                        if(valid) {
+                            String updateQuery = "update course set teacher = '" + uidTeacher + "' where cid = '" + selectedCourseId + "'";
+                            connection.statement.executeUpdate(updateQuery);
+                            JOptionPane.showMessageDialog(null, "Teacher has been updated successfully");
+                            return;
+                        }else if(valid == false && k != getTeacherCount()){
+                            JOptionPane.showMessageDialog(null, "Time period is not available for given teacher");
+                        }
+                    }
+                    k++;
+                }
+                if(k == getTeacherCount()){
+                    JOptionPane.showMessageDialog(null, "Write a teacher from the university");
+
+                }else{
+                    this.remove(sp);
+                    createTable("select * from course",getCourseCount());
+                }
             }catch (Exception ee){
                 ee.printStackTrace();
                 if(String.valueOf(ee).startsWith("java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16")){
@@ -206,6 +304,21 @@ public class UpdateCourse extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         return depCount;
+    }
+
+    public int getTeacherCount(){
+        int teacherCount= 0;
+        try{
+            conn connection = new conn();
+            String query = "select count(uid) as count from user where type = 2";
+            ResultSet rs = connection.statement.executeQuery(query);
+            rs.next();
+            int countDep = rs.getInt("count");
+            teacherCount += countDep;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return teacherCount;
     }
 
     public static void main(String[] args) {
