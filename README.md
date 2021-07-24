@@ -1,5 +1,8 @@
 # University Management System
 
+![mainPage](https://user-images.githubusercontent.com/73059230/126874044-e8100556-c423-41d9-8ab3-eb1b4c771aad.png)
+
+
 This Project is created for Goksel University. System keeps information about students, teachers and so on. <br>
 There are three types of account;
 
