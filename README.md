@@ -1,6 +1,6 @@
 # University Management System
 
-This Project is created for universities. System keeps information about students, teachers and so on. <br>
+This Project is created for Goksel University. System keeps information about students, teachers and so on. <br>
 There are three types of account;
 
 1) Admin
