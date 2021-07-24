@@ -191,3 +191,5 @@ They can login the system with their name and given password. In student page, t
 #### <i>Academic Information</i>
   - Students can see their GPA and academic standing (Honor, High Honor).
   - Students can see their transcript.
+
+![logo](https://user-images.githubusercontent.com/73059230/126874244-bc6b17af-7645-40d3-8b59-ce70ebfd0916.png)
