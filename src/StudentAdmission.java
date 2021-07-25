@@ -246,9 +246,4 @@ public class StudentAdmission extends JFrame implements ActionListener {
         text_phone.setText("");
         text_birth.setText("");
     }
-
-    public static void main(String[] args) {
-        new StudentAdmission();
-    }
-
 }

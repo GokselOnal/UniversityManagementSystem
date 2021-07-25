@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 
 public class AcademicInformationTeacher extends JFrame {
     JTable table;
-    String x[] = {"Course Id","Course Name"};
+    String x[] = {"Course Id","Course Name", "Number of Students"};
     String y[][];
     JScrollPane sp;
 
@@ -29,10 +29,11 @@ public class AcademicInformationTeacher extends JFrame {
             System.out.println(teacher_id);
             int i = 0;
             int j = 0;
-            y = new String[getCourseCount(teacher_id)][2];
+            y = new String[getCourseCount(teacher_id)][3];
             while (rs2.next()){
                 y[i][j++] = rs2.getString("cid");
                 y[i][j++] = rs2.getString("title");
+                y[i][j++] = String.valueOf(getCourseStudentCount(rs2.getString("cid")));
                 i++;
                 j=0;
             }
@@ -65,5 +66,20 @@ public class AcademicInformationTeacher extends JFrame {
             e.printStackTrace();
         }
         return courseCount;
+    }
+
+    public int getCourseStudentCount(String id){
+        int studentCount = 0;
+        try {
+            conn connection = new conn();
+            String query = "select count(distinct(user_id)) as count from schedule where course_id = '" + id + "'";
+            ResultSet rs = connection.statement.executeQuery(query);
+            rs.next();
+            int countDep = rs.getInt("count");
+            studentCount += countDep;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return studentCount;
     }
 }

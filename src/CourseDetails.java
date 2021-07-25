@@ -211,8 +211,4 @@ public class CourseDetails extends JFrame implements ActionListener {
         }
         return depCount;
     }
-
-    public static void main(String[] args) {
-        new CourseDetails();
-    }
 }

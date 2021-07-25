@@ -106,8 +106,4 @@ public class NewProgram extends JFrame implements ActionListener {
             this.setVisible(false);
         }
     }
-
-    public static void main(String[] args) {
-        new NewProgram().setVisible(true);
-    }
 }

@@ -23,9 +23,7 @@ public class TeacherPage extends JFrame implements ActionListener {
         JLabel label = new JLabel(icc3);
         label.setBounds(0,150,1925,880);
 
-
         String userName = Login.Username;
-        System.out.println(userName);
 
         name = new JButton(userName);
         name.setBounds(35,50,130,60);
@@ -91,9 +89,5 @@ public class TeacherPage extends JFrame implements ActionListener {
         else if(e.getSource() == academicInformation){
             new AcademicInformationTeacher();
         }
-    }
-
-    public static void main(String[] args) {
-        new TeacherPage();
     }
 }

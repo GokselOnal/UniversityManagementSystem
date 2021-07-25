@@ -233,8 +233,6 @@ public class NewCourse extends JFrame implements ActionListener {
             String start_time = (String) combo_startTime.getSelectedItem();
             String duration = (String) combo_duration.getSelectedItem();
             String department_id = (String) combo_department.getSelectedItem();
-
-            //AYNI HOCAYA, AYNI SAATLER ARALIGINDA BASKA DERS EKLENEMEZ
             try {
                 conn connection = new conn();
                 String query = "select * from user where name = '"+teacher_name+"'";
@@ -273,10 +271,6 @@ public class NewCourse extends JFrame implements ActionListener {
         else if(e.getSource() == cancel){
             this.setVisible(false);
         }
-    }
-
-    public static void main(String[] args) {
-        new NewCourse();
     }
 
     public int getCourseCount(){

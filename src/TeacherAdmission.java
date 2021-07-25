@@ -224,9 +224,4 @@ public class TeacherAdmission extends JFrame implements ActionListener {
         text_phone.setText("");
         text_birth.setText("");
     }
-
-    public static void main(String[] args) {
-        new TeacherAdmission();
-    }
-
 }

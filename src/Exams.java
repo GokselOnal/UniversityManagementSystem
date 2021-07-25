@@ -62,7 +62,6 @@ public class Exams extends JFrame implements ActionListener {
         this.getContentPane().setBackground(new Color(255,140,0));
         this.add(courses);
         this.add(select);
-        //this.add(view);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
@@ -134,7 +133,6 @@ public class Exams extends JFrame implements ActionListener {
         }
         else if(e.getSource() == submit){
             String selectedCourse = (String)courses.getSelectedItem();
-            //System.out.println(selectedCourse);
             String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
             String alph = "";
             try {
@@ -146,7 +144,6 @@ public class Exams extends JFrame implements ActionListener {
                     rs.next();
                     String selectedUserId = rs.getString("uid");
                     String selectedStudentGrade = (String) table.getModel().getValueAt(i, 1);
-                    //System.out.println(selectedStudentName +selectedStudentGrade);
                     if((Integer.valueOf(selectedStudentGrade) >= 90) && (Integer.valueOf(selectedStudentGrade) <= 100)){
                         alph += "A";
                     }else if((Integer.valueOf(selectedStudentGrade) >= 85) && (Integer.valueOf(selectedStudentGrade) < 90)){
@@ -195,9 +192,5 @@ public class Exams extends JFrame implements ActionListener {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        new Exams();
     }
 }

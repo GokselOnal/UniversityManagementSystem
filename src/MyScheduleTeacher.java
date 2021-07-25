@@ -93,8 +93,4 @@ public class MyScheduleTeacher extends JFrame {
         this.add(sp);
         this.setVisible(true);
     }
-
-    public static void main(String[] args) {
-        new MySchedule();
-    }
 }

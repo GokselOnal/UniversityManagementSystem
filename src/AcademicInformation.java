@@ -122,10 +122,6 @@ public class AcademicInformation extends JFrame implements ActionListener {
         return result;
     }
 
-    public static void main(String[] args) {
-        new AcademicInformation().setVisible(true);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == transcript){

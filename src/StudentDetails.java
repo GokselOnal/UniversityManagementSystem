@@ -130,9 +130,6 @@ public class StudentDetails extends JFrame implements ActionListener{
         }
         return depCount;
     }
-    public static void main(String[] args) {
-        new StudentDetails();
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {

@@ -97,10 +97,4 @@ public class StudentPage extends JFrame implements ActionListener {
             new AcademicInformation();
         }
     }
-
-    public static void main(String[] args) {
-        new StudentPage();
-    }
-
-
 }

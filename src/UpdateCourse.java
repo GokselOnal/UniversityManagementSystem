@@ -102,7 +102,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
                     ResultSet rs3 = connection3.statement.executeQuery(selectQuery3);
                     while(rs3.next()){
                         String teacherCourse = rs3.getString("cid");
-                        //System.out.println("Teacher course: " + teacherCourse);
                         conn connection4 = new conn();
                         String selectQuery4 = "select day,start_time, duration from course where cid = '"+ teacherCourse +"'";
                         ResultSet rs4 = connection4.statement.executeQuery(selectQuery4);
@@ -110,7 +109,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
                         String day = rs4.getString("day");
                         String start_time = rs4.getString("start_time");
                         String duration = rs4.getString("duration");
-                        //System.out.println("Teachers ->>" + day +" " + start_time+ " " + duration);
 
                         conn connection5 = new conn();
                         String selectQuery5 = "select day,start_time, duration from course where cid = '"+ selectedCourseId +"'";
@@ -119,7 +117,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
                         String daySelected = rs5.getString("day");
                         String start_timeSelected = rs5.getString("start_time");
                         String durationSelected = rs5.getString("duration");
-                        //System.out.println("Selected ->>" + daySelected+" " + start_timeSelected+ " " + durationSelected);
 
 
                         if(daySelected.equals(day) && !selectedCourseId.equals(teacherCourse)){
@@ -149,7 +146,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
                             valid = true;
                         }
                     }
-                    //başka bir dersle çakışıyor mu
                     conn connection6 = new conn();
                     String selectQuery6 = "select cid from course where day = '"+ newDay +"'";
                     ResultSet rs6 = connection6.statement.executeQuery(selectQuery6);
@@ -232,7 +228,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
                     ResultSet rs2 = connection2.statement.executeQuery(selectQuery);
                     rs2.next();
 
-                    //String durationSelected = rs2.getString("duration");
                     String daySelected = rs2.getString("day");
 
                     conn connection3 = new conn();
@@ -255,7 +250,6 @@ public class UpdateCourse extends JFrame implements ActionListener {
             }catch (Exception ee){
                 ee.printStackTrace();
                 if(String.valueOf(ee).startsWith("java.sql.SQLException: Illegal operation on empty result set")){
-                    //JOptionPane.showMessageDialog(null, "Given time is not available");
                     conn connection = new conn();
                     String updateQuery = "update course set start_time = '" + newTime + "' where cid = '" + selectedCourseId + "'";
                     try {
@@ -466,9 +460,5 @@ public class UpdateCourse extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         return teacherCount;
-    }
-
-    public static void main(String[] args) {
-        new UpdateCourse().setVisible(true);
     }
 }

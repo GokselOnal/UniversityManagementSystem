@@ -226,8 +226,4 @@ public class UpdateTeacher extends JFrame implements ActionListener {
         }
         return teacherCount;
     }
-
-    public static void main(String[] args) {
-        new UpdateTeacher();
-    }
 }

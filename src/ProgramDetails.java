@@ -54,9 +54,4 @@ public class ProgramDetails extends JFrame {
         }
         return depCount;
     }
-
-    public static void main(String[] args) {
-        new ProgramDetails();
-    }
-
 }
